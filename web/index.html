@@ -7,18 +7,20 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&family=Marcellus&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css">
+  <!-- Fallback inline style to avoid white screen if CSS fails -->
+  <style>body{background:#2b1e12;color:#faefe3}</style>
+  <link rel="stylesheet" href="/style.css?v=3">
   <meta name="theme-color" content="#3b2a1b">
 </head>
 <body>
   <div class="bg">
-    <div class="grain"></div>
+    <div class="texture"></div>
     <div class="vignette"></div>
   </div>
 
   <header class="header wrap">
     <div class="brand">
-      <img class="logo-img" src="/assets/ramjwi_logo.png" alt="람쥐 서버 로고"/>
+      <img class="logo-img" src="/assets/ramjwi_logo.png" alt="람쥐 서버 로고" onerror="this.style.display='none'"/>
       <div class="brand-text">
         <div class="logo">람쥐 서버</div>
         <div class="subtitle">힐링 야생 RPG · 사전예약</div>
@@ -27,8 +29,8 @@
     <div id="authArea" class="auth"></div>
   </header>
 
-  <main class="wrap">
-    <section class="hero card glass">
+  <main class="wrap fade-in">
+    <section class="hero card glass raise">
       <div class="hero-left">
         <h1>포근한 힐링과 모험이 공존하는 야생 RPG</h1>
         <p class="muted">디스코드에서 “사전 예약하기” 버튼으로 참여한 뒤, 아래에서 내 상태를 확인하세요.</p>
@@ -38,7 +40,7 @@
           <span class="badge">힐링</span>
           <span class="badge">멀티플레이</span>
         </div>
-        <a class="btn invite" href="https://discord.gg/FVXQN8ry" target="_blank" rel="noopener">디스코드 초대 참여</a>
+        <a class="btn invite pulse" href="https://discord.gg/FVXQN8ry" target="_blank" rel="noopener">디스코드 초대 참여</a>
       </div>
 
       <div class="check">
@@ -51,20 +53,38 @@
     </section>
 
     <section class="grid">
-      <div class="card glass">
+      <div class="card glass raise">
         <h3>내 예약 상태</h3>
         <div id="meBox" class="mebox muted">로그인하면 예약 상태를 표시합니다.</div>
         <div class="hint small muted">※ 사전예약은 디스코드 서버 내 <b>/사전예약패널</b> → <b>사전 예약하기</b> 버튼으로 진행됩니다.</div>
       </div>
 
-      <div class="card glass">
+      <div class="card glass raise">
         <div class="list-head">
           <h3>사전예약 명단</h3>
-          <div class="list-head-tools">
+          <div class="list-head-tools row">
+            <label class="muted small">정렬</label>
+            <select id="sortBy">
+              <option value="latest">최신 등록순</option>
+              <option value="oldest">오래된 등록순</option>
+              <option value="nick">닉네임 A→Z</option>
+              <option value="mc">마크닉 A→Z</option>
+            </select>
+            <label class="muted small">페이지</label>
+            <select id="pageSize">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="50">50</option>
+            </select>
             <input id="searchInput" class="search" placeholder="닉네임 검색">
           </div>
         </div>
         <ul id="list" class="list"><li class="muted">불러오는 중...</li></ul>
+        <div class="pager row">
+          <button class="btn ghost" id="prevBtn">이전</button>
+          <span id="pageInfo" class="muted small">1 / 1</span>
+          <button class="btn ghost" id="nextBtn">다음</button>
+        </div>
       </div>
     </section>
   </main>
@@ -84,7 +104,6 @@
     };
 
     const el = (q) => document.querySelector(q);
-    let listCache = [];
 
     async function fetchJSON(url){
       const r = await fetch(url, {credentials: "include"});
@@ -104,6 +123,7 @@
       }catch(e){ return iso; }
     }
 
+    // ---- Auth + Me ----
     async function loadAuth(){
       try{
         const me = await fetchJSON(api.me);
@@ -147,39 +167,87 @@
       }
     }
 
+    // ---- List with sort/filter/pagination ----
+    let rawList = [];
+    let filtered = [];
+    let current = 1;
+    let pageSize = 20;
+    const sortSel = el("#sortBy");
+    const sizeSel = el("#pageSize");
+    const pageInfo = el("#pageInfo");
+
+    function sortData(arr){
+      const v = sortSel.value;
+      const a = [...arr];
+      if(v === "latest"){
+        a.sort((x,y)=> new Date(y.created_at) - new Date(x.created_at));
+      }else if(v === "oldest"){
+        a.sort((x,y)=> new Date(x.created_at) - new Date(y.created_at));
+      }else if(v === "nick"){
+        a.sort((x,y)=> (x.nickname||"").localeCompare(y.nickname||""));
+      }else if(v === "mc"){
+        a.sort((x,y)=> (x.mc_name||"").localeCompare(y.mc_name||""));
+      }
+      return a;
+    }
+
+    function renderPage(){
+      const total = filtered.length;
+      const pages = Math.max(1, Math.ceil(total / pageSize));
+      if(current > pages) current = pages;
+      const start = (current-1)*pageSize;
+      const pageItems = filtered.slice(start, start+pageSize);
+
+      const ul = el("#list");
+      if(!pageItems.length){
+        ul.innerHTML = `<li class="muted">명단이 비었거나 조건에 맞는 결과가 없습니다.</li>`;
+      }else{
+        ul.innerHTML = pageItems.map(x => `
+          <li class="li">
+            <div class="nick">${x.nickname}</div>
+            <div class="sub muted">(MC: ${x.mc_name})</div>
+            <div class="time badge">${fmtTime(x.created_at)}</div>
+          </li>
+        `).join("");
+      }
+      pageInfo.textContent = `${current} / ${pages}`;
+    }
+
+    function applyFilter(){
+      const q = (el("#searchInput").value||"").trim().toLowerCase();
+      const sorted = sortData(rawList);
+      if(!q){
+        filtered = sorted;
+      }else{
+        filtered = sorted.filter(x =>
+          (x.nickname||"").toLowerCase().includes(q) ||
+          (x.mc_name||"").toLowerCase().includes(q)
+        );
+      }
+      current = 1;
+      renderPage();
+    }
+
     async function loadList(){
       try{
-        const j = await fetchJSON(api.list);
-        listCache = Array.isArray(j) ? j : [];
-        renderList(listCache);
+        rawList = await fetchJSON(api.list);
+        applyFilter();
       }catch(e){
         el("#list").innerHTML = `<li class="muted">불러오기 실패</li>`;
       }
     }
 
-    function renderList(arr){
-      const ul = el("#list");
-      if(!arr.length){
-        ul.innerHTML = `<li class="muted">아직 등록된 명단이 없습니다.</li>`;
-        return;
-      }
-      ul.innerHTML = arr.map(x => `
-        <li class="li">
-          <div class="nick">${x.nickname}</div>
-          <div class="sub muted">(MC: ${x.mc_name})</div>
-          <div class="time badge">${fmtTime(x.created_at)}</div>
-        </li>
-      `).join("");
-    }
-
-    el("#searchInput")?.addEventListener("input", (e)=>{
-      const q = e.target.value.trim().toLowerCase();
-      if(!q) return renderList(listCache);
-      const f = listCache.filter(x => (x.nickname||"").toLowerCase().includes(q) ||
-                                      (x.mc_name||"").toLowerCase().includes(q));
-      renderList(f);
+    // Events
+    el("#searchInput").addEventListener("input", applyFilter);
+    sortSel.addEventListener("change", applyFilter);
+    sizeSel.addEventListener("change", ()=>{
+      pageSize = parseInt(sizeSel.value,10) || 20;
+      current = 1; renderPage();
     });
+    el("#prevBtn").addEventListener("click", ()=>{ if(current>1){ current--; renderPage(); } });
+    el("#nextBtn").addEventListener("click", ()=>{ current++; renderPage(); });
 
+    // Check name
     el("#btnCheck").onclick = async () => {
       const name = el("#mcName").value.trim();
       if(!name){ alert("닉네임을 입력하세요."); return; }
