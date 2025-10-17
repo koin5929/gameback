@@ -2,6 +2,7 @@ import os, re, httpx
 from fastapi import FastAPI, Depends, HTTPException, Header, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, constr
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -14,9 +15,8 @@ load_dotenv()
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*")
 SHARED_SECRET = os.getenv("SHARED_SECRET", "CHANGE_ME_32CHARS")
 
-app = FastAPI(title="Prelaunch API", version="1.0.0")
+app = FastAPI(title="Prelaunch API", version="1.0.1")
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[ALLOWED_ORIGINS] if ALLOWED_ORIGINS != "*" else ["*"],
@@ -25,11 +25,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 🔹 홈페이지 정적 파일 서빙: repo 루트의 web/ 를 루트 경로("/")에 마운트
-#    -> https://.../  로 접속 시 web/index.html 이 바로 열린다.
-app.mount("/", StaticFiles(directory="web", html=True), name="web")
+# ---------- 정적 파일 제공 (루트 마운트 금지) ----------
+# /assets/*  → web/assets/* 파일들
+app.mount("/assets", StaticFiles(directory="web/assets"), name="assets")
 
-# --- DB 세션 ---
+# /style.css → 개별 파일 응답
+@app.get("/style.css", include_in_schema=False)
+def style_css():
+    return FileResponse("web/style.css")
+
+# /         → index.html
+@app.get("/", include_in_schema=False)
+def index_html():
+    return FileResponse("web/index.html")
+
+# (선택) SPA 서브경로가 필요하면 api/가 아닌 경로는 전부 index.html로
+@app.get("/{path:path}", include_in_schema=False)
+def spa_fallback(path: str):
+    if path.startswith("api/"):
+        raise HTTPException(status_code=404)
+    # /favicon.ico 등 정적파일을 직접 두지 않았다면 index로 돌려 SPA에서 처리
+    return FileResponse("web/index.html")
+
+# ---------- DB ----------
 def get_db():
     db = SessionLocal()
     try:
@@ -37,7 +55,7 @@ def get_db():
     finally:
         db.close()
 
-# --- 스키마 ---
+# ---------- 스키마 ----------
 class RegisterIn(BaseModel):
     discord_id: constr(strip_whitespace=True, min_length=1, max_length=64)
     nickname:   constr(strip_whitespace=True, min_length=1, max_length=128)
@@ -49,23 +67,21 @@ class ReservationOut(BaseModel):
     nickname: str
     created_at: str
 
-# --- 초기화 ---
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
 
-# --- 보안 헤더 확인 ---
 def verify_secret(x_prelaunch_secret: str = Header(default="")):
     if SHARED_SECRET and x_prelaunch_secret != SHARED_SECRET:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-# --- 닉네임 → UUID 확인 ---
+# ---------- 닉네임 → UUID ----------
 NAME_RE = re.compile(r"^[a-zA-Z0-9_]{3,16}$")
 
 async def fetch_json(url, timeout=5.0):
     async with httpx.AsyncClient(timeout=timeout) as client:
         r = await client.get(url)
-        if r.status_code == 204:
+        if r.status_code in (204, 404):
             return None
         try:
             return r.json()
@@ -75,7 +91,6 @@ async def fetch_json(url, timeout=5.0):
 async def resolve_uuid(name: str):
     if not NAME_RE.match(name):
         return None
-    # 1) Mojang 공식
     try:
         j = await fetch_json(f"https://api.mojang.com/users/profiles/minecraft/{name}", 4.0)
         if j and "id" in j:
@@ -84,14 +99,12 @@ async def resolve_uuid(name: str):
             return {"uuid": uuid.lower(), "name": j.get("name", name)}
     except Exception:
         pass
-    # 2) Ashcon
     try:
         j = await fetch_json(f"https://api.ashcon.app/mojang/v2/user/{name}", 4.0)
         if j and "uuid" in j:
             return {"uuid": j["uuid"].lower(), "name": j.get("username", name)}
     except Exception:
         pass
-    # 3) Minetools
     try:
         j = await fetch_json(f"https://api.minetools.eu/uuid/{name}", 4.0)
         if j and j.get("status") == "OK" and "id" in j:
@@ -102,7 +115,7 @@ async def resolve_uuid(name: str):
         pass
     return None
 
-# --- API ---
+# ---------- API ----------
 class ValidateOut(BaseModel):
     ok: bool
     uuid: str | None = None
@@ -148,7 +161,6 @@ def list_public(db: Session = Depends(get_db)):
         for r in rows
     ]
 
-# (선택) 헬스체크 엔드포인트
 @app.get("/api/health")
 def health():
     return {"ok": True}
