@@ -4,7 +4,7 @@ from discord.ext import commands
 
 BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN", "")
 API_BASE  = os.getenv("API_BASE", "http://localhost:8000")
-SECRET    = os.getenv("SHARED_SECRET", "CHANGE_ME_32CHARS")
+SECRET    = os.getenv("SHARED_SECRET", "asas1212@@")
 GUILD_ID  = os.getenv("GUILD_ID")
 
 intents = discord.Intents.default()
