@@ -2,10 +2,20 @@ import os, httpx, discord
 from discord import app_commands
 from discord.ext import commands
 
-BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN", "")
-API_BASE  = os.getenv("API_BASE", "http://localhost:8000")
-SECRET    = os.getenv("SHARED_SECRET", "asas1212@@")
-GUILD_ID  = os.getenv("GUILD_ID")
+# --- Environment only (no hardcoded defaults) ---
+BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+if not BOT_TOKEN:
+    raise SystemExit("❌ DISCORD_BOT_TOKEN 환경변수가 비어 있습니다. Render → Environment에서 설정하세요.")
+
+SECRET = os.getenv("SHARED_SECRET")
+if not SECRET:
+    raise SystemExit("❌ SHARED_SECRET 환경변수가 비어 있습니다. Render → Environment에서 설정하세요.")
+
+# all-in-one: FastAPI is on the same container/PORT
+PORT = os.getenv("PORT", "10000")
+API_BASE = os.getenv("API_BASE") or f"http://127.0.0.1:{PORT}"
+
+GUILD_ID = os.getenv("GUILD_ID")
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -14,15 +24,15 @@ async def validate_name(name: str) -> dict:
     url = f"{API_BASE}/api/validate-name"
     async with httpx.AsyncClient(timeout=10.0) as client:
         r = await client.get(url, params={"name": name})
-        r.raise_for_status(); return r.json()
+        r.raise_for_status()
+        return r.json()
 
 async def register(discord_id: str, nickname: str, mc_name: str):
     url = f"{API_BASE}/api/register"
     headers = {"X-Prelaunch-Secret": SECRET}
     payload = {"discord_id": discord_id, "nickname": nickname, "mc_name": mc_name}
     async with httpx.AsyncClient(timeout=10.0) as client:
-        r = await client.post(url, json=payload, headers=headers)
-        return r
+        return await client.post(url, json=payload, headers=headers)
 
 class ReservationModal(discord.ui.Modal, title="사전예약 · 마인크래프트 닉네임 확인"):
     mc_name = discord.ui.TextInput(label="마인크래프트 닉네임",
@@ -33,12 +43,15 @@ class ReservationModal(discord.ui.Modal, title="사전예약 · 마인크래프�
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         name = str(self.mc_name.value).strip()
-        try: v = await validate_name(name)
-        except Exception: return await interaction.followup.send("⚠️ 검증 서버 연결 실패.", ephemeral=True)
-        if not v.get("ok"): return await interaction.followup.send("❌ 존재하지 않는 닉네임입니다.", ephemeral=True)
+        try:
+            v = await validate_name(name)
+        except Exception:
+            return await interaction.followup.send("⚠️ 검증 서버 연결 실패.", ephemeral=True)
+        if not v.get("ok"):
+            return await interaction.followup.send("❌ 존재하지 않는 닉네임입니다.", ephemeral=True)
         try:
             r = await register(str(self.user.id), interaction.user.display_name, name)
-            if r.status_code in (200,201):
+            if r.status_code in (200, 201):
                 return await interaction.followup.send(
                     f"✅ 사전예약 완료!\n- 디스코드: {interaction.user.mention}\n- 마크 닉네임: **{v.get('name', name)}**",
                     ephemeral=True)
@@ -52,7 +65,8 @@ class ReservationModal(discord.ui.Modal, title="사전예약 · 마인크래프�
             return await interaction.followup.send("⚠️ 서버 연결 실패. 잠시 후 재시도.", ephemeral=True)
 
 class ReservationView(discord.ui.View):
-    def __init__(self): super().__init__(timeout=None)
+    def __init__(self):
+        super().__init__(timeout=None)
     @discord.ui.button(label="사전 예약하기", style=discord.ButtonStyle.primary, custom_id="prelaunch:reserve:open")
     async def open_modal(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(ReservationModal(interaction.user))
@@ -73,15 +87,13 @@ async def prelaunch_panel(interaction: discord.Interaction):
     await interaction.channel.send(embed=embed, view=ReservationView())
 
 async def run_bot():
-    if not BOT_TOKEN:
-        print("DISCORD_BOT_TOKEN missing; bot will not start")
-        return
     @bot.event
     async def on_ready():
         bot.add_view(ReservationView())
         try:
             if GUILD_ID: await bot.tree.sync(guild=discord.Object(id=int(GUILD_ID)))
             else: await bot.tree.sync()
-        except Exception as e: print("Slash sync failed:", e)
+        except Exception as e:
+            print("Slash sync failed:", e)
         print(f"Discord bot logged in as {bot.user}")
     await bot.start(BOT_TOKEN)
