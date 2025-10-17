@@ -5,7 +5,7 @@ services:
     buildCommand: |
       pip install -r backend/requirements.txt
     startCommand: |
-      python start_all.py
+      PYTHONPATH=backend python start_all.py
     plan: free
     autoDeploy: true
     envVars:
