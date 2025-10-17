@@ -2,7 +2,7 @@ import os, httpx, discord
 from discord import app_commands
 from discord.ext import commands
 
-BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN", "MTI1MzI5Njk2OTg4ODE3MDAyNA.GItQRl.qKsk-Z3gvb4mmM8cbMplvfQpsbwHMtNf5ywzVk")
+BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN", "")
 API_BASE  = os.getenv("API_BASE", "http://localhost:8000")
 SECRET    = os.getenv("SHARED_SECRET", "CHANGE_ME_32CHARS")
 GUILD_ID  = os.getenv("GUILD_ID")
