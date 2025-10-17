@@ -11,11 +11,12 @@ from dotenv import load_dotenv
 from .database import Base, engine, SessionLocal
 from .models import Reservation
 
+# ----------------- 기본 설정 -----------------
 load_dotenv()
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*")
 SHARED_SECRET = os.getenv("SHARED_SECRET", "CHANGE_ME_32CHARS")
 
-app = FastAPI(title="Prelaunch API", version="1.0.1")
+app = FastAPI(title="Prelaunch API", version="1.0.3")
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,29 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------- 정적 파일 제공 (루트 마운트 금지) ----------
-# /assets/*  → web/assets/* 파일들
-app.mount("/assets", StaticFiles(directory="web/assets"), name="assets")
-
-# /style.css → 개별 파일 응답
-@app.get("/style.css", include_in_schema=False)
-def style_css():
-    return FileResponse("web/style.css")
-
-# /         → index.html
-@app.get("/", include_in_schema=False)
-def index_html():
-    return FileResponse("web/index.html")
-
-# (선택) SPA 서브경로가 필요하면 api/가 아닌 경로는 전부 index.html로
-@app.get("/{path:path}", include_in_schema=False)
-def spa_fallback(path: str):
-    if path.startswith("api/"):
-        raise HTTPException(status_code=404)
-    # /favicon.ico 등 정적파일을 직접 두지 않았다면 index로 돌려 SPA에서 처리
-    return FileResponse("web/index.html")
-
-# ---------- DB ----------
+# ----------------- DB -----------------
 def get_db():
     db = SessionLocal()
     try:
@@ -55,7 +34,7 @@ def get_db():
     finally:
         db.close()
 
-# ---------- 스키마 ----------
+# ----------------- 모델 -----------------
 class RegisterIn(BaseModel):
     discord_id: constr(strip_whitespace=True, min_length=1, max_length=64)
     nickname:   constr(strip_whitespace=True, min_length=1, max_length=128)
@@ -75,7 +54,7 @@ def verify_secret(x_prelaunch_secret: str = Header(default="")):
     if SHARED_SECRET and x_prelaunch_secret != SHARED_SECRET:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-# ---------- 닉네임 → UUID ----------
+# ----------------- 유틸 (UUID 조회) -----------------
 NAME_RE = re.compile(r"^[a-zA-Z0-9_]{3,16}$")
 
 async def fetch_json(url, timeout=5.0):
@@ -92,6 +71,7 @@ async def resolve_uuid(name: str):
     if not NAME_RE.match(name):
         return None
     try:
+        # 1) Mojang
         j = await fetch_json(f"https://api.mojang.com/users/profiles/minecraft/{name}", 4.0)
         if j and "id" in j:
             raw = j["id"]
@@ -100,12 +80,14 @@ async def resolve_uuid(name: str):
     except Exception:
         pass
     try:
+        # 2) Ashcon
         j = await fetch_json(f"https://api.ashcon.app/mojang/v2/user/{name}", 4.0)
         if j and "uuid" in j:
             return {"uuid": j["uuid"].lower(), "name": j.get("username", name)}
     except Exception:
         pass
     try:
+        # 3) Minetools
         j = await fetch_json(f"https://api.minetools.eu/uuid/{name}", 4.0)
         if j and j.get("status") == "OK" and "id" in j:
             raw = j["id"]
@@ -115,11 +97,15 @@ async def resolve_uuid(name: str):
         pass
     return None
 
-# ---------- API ----------
+# ----------------- API 라우트 -----------------
 class ValidateOut(BaseModel):
     ok: bool
     uuid: str | None = None
     name: str | None = None
+
+@app.get("/api/health")
+def health():
+    return {"ok": True}
 
 @app.get("/api/validate-name", response_model=ValidateOut)
 async def validate_name(name: str = Query(..., min_length=3, max_length=16)):
@@ -161,6 +147,21 @@ def list_public(db: Session = Depends(get_db)):
         for r in rows
     ]
 
-@app.get("/api/health")
-def health():
-    return {"ok": True}
+# ----------------- 정적 파일 & SPA -----------------
+# ⚠️ 반드시 맨 마지막에 둬야 함
+app.mount("/assets", StaticFiles(directory="web/assets"), name="assets")
+
+@app.get("/style.css", include_in_schema=False)
+def style_css():
+    return FileResponse("web/style.css")
+
+@app.get("/", include_in_schema=False)
+def index_html():
+    return FileResponse("web/index.html")
+
+@app.get("/{path:path}", include_in_schema=False)
+def spa_fallback(path: str):
+    # api 요청은 무시 (404)
+    if path.startswith("api/"):
+        raise HTTPException(status_code=404)
+    return FileResponse("web/index.html")
