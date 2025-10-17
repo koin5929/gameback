@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>사전예약 명단</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:900px;margin:40px auto;padding:0 16px;}
+    h1{font-size:24px}
+    .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+    .row{display:flex;gap:8px;align-items:center}
+    input{padding:8px 12px;border:1px solid #d1d5db;border-radius:8px;flex:1}
+    button{padding:10px 14px;border:0;border-radius:10px;background:#2563eb;color:#fff;cursor:pointer}
+    button:disabled{background:#9ca3af}
+    ul{list-style:none;padding:0}
+    li{padding:8px 0;border-bottom:1px solid #f3f4f6}
+    small{color:#6b7280}
+  </style>
+</head>
+<body>
+  <h1>사전예약 명단</h1>
+
+  <div class="card">
+    <div class="row" style="margin-bottom:8px">
+      <input id="mcName" placeholder="마크 닉네임 (3~16자)" maxlength="16"/>
+      <button id="btnCheck">닉네임 확인하기</button>
+    </div>
+    <div id="checkResult"></div>
+  </div>
+
+  <div class="card">
+    <h3>등록된 명단</h3>
+    <ul id="list"></ul>
+  </div>
+
+  <script>
+  const API_BASE = (window.API_BASE || "http://localhost:8000");
+
+  async function loadList(){
+    try{
+      const r = await fetch(`${API_BASE}/api/list`);
+      const j = await r.json();
+      const ul = document.getElementById('list');
+      ul.innerHTML = j.map(x => `<li><b>${x.nickname}</b> <small>(MC: ${x.mc_name})</small> — <small>${x.created_at}</small></li>`).join("");
+    }catch(e){
+      document.getElementById('list').innerHTML = "<li>불러오기 실패</li>";
+    }
+  }
+
+  document.getElementById('btnCheck').onclick = async () => {
+    const name = document.getElementById('mcName').value.trim();
+    if(!name){ alert("닉네임을 입력하세요."); return; }
+    const btn = document.getElementById('btnCheck'); btn.disabled = true;
+    try{
+      const r = await fetch(`${API_BASE}/api/validate-name?name=${encodeURIComponent(name)}`);
+      const d = await r.json();
+      document.getElementById('checkResult').innerText = d.ok ? `✅ 실존 계정: ${d.name} (${d.uuid})` : "❌ 존재하지 않는 닉네임";
+    }catch(e){
+      document.getElementById('checkResult').innerText = "⚠️ 확인 실패";
+    }finally{
+      btn.disabled = false;
+    }
+  };
+
+  loadList();
+  </script>
+</body>
+</html>
