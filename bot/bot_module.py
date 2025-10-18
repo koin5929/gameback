@@ -75,7 +75,7 @@ class ReservationView(discord.ui.View):
 @app_commands.checks.has_permissions(manage_guild=True)
 async def prelaunch_panel(interaction: discord.Interaction):
     embed = discord.Embed(
-        title="LOSS ONLINE · 사전예약",
+        title="람쥐 서버 · 사전예약",
         description=(
             "아래 **[사전 예약하기]** 버튼을 누르고 **마인크래프트 닉네임**을 입력하세요.\n"
             "• 닉네임 실존 여부 확인 후 사전예약이 완료됩니다.\n"
