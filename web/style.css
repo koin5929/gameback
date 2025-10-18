@@ -13,6 +13,9 @@
   --border: #2a2722;
   --accent:#ffefa9;
   --green:#5fbf7f;
+  --ok:#2bd673;
+  --warn:#ffb020;
+  --err:#ff5a5a;
 }
 
 *{ box-sizing: border-box; }
@@ -38,6 +41,8 @@ img{ max-width:100%; display:block; }
   margin:0 0 24px;
 }
 .muted{ color:var(--muted); }
+.small{ font-size:12px; }
+.ok{ color:var(--ok); } .warn{ color:var(--warn); } .err{ color:var(--err); }
 
 /* =========
   Header
@@ -60,6 +65,13 @@ img{ max-width:100%; display:block; }
 .nav a{ color:var(--text); text-decoration:none; font-weight:500; }
 .nav a:hover{ color:var(--gold-2); }
 
+.auth{ display:flex; gap:12px; align-items:center; margin-left:12px; }
+.avatar{ width:36px; height:36px; border-radius:999px; border:1px solid var(--border); }
+.who{ display:flex; flex-direction:column; }
+.name{ font-weight:700; }
+.link{ color:var(--muted); text-decoration:none; }
+.link:hover{ text-decoration:underline; }
+
 .btn{
   display:inline-flex; align-items:center; justify-content:center;
   gap:.5rem; padding:.7rem 1rem; border-radius:12px;
@@ -72,7 +84,7 @@ img{ max-width:100%; display:block; }
 .btn--primary{ background:linear-gradient(180deg, #ffd57e, #bf8b2c); color:#000; border:none; font-weight:800; }
 .btn--ghost{ background:transparent; border:1px solid var(--gold); color:var(--gold-2); }
 
-.hamburger{ display:none; margin-left:auto; background:none; border:0; padding:8px; }
+.hamburger{ display:none; margin-left:8px; background:none; border:0; padding:8px; }
 .hamburger span{ display:block; width:26px; height:2px; background:#fff; margin:6px 0; }
 
 /* =========
@@ -129,16 +141,27 @@ img{ max-width:100%; display:block; }
 }
 
 /* =========
-  Lists
+  Lists / Forms (reserve) 
 ========= */
-.check{ list-style:none; padding:0; margin:0; }
-.check li{ margin:8px 0; }
-.check li::before{ content:"✔"; color:var(--green); margin-right:8px; }
+.row{ display:flex; gap:10px; align-items:center; }
+input, select{
+  background:#3a2a1f; border:1px solid var(--border); color:#fff7ee;
+  border-radius:10px; padding:10px 12px; outline:none;
+}
+input:focus, select:focus{ border-color:#a0783c; box-shadow:0 0 0 3px rgba(160,120,60,.25); }
 
-.boss{ padding-left:18px; }
-.loot, .gear{ padding-left:18px; }
+.list-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px }
+.search{ min-width:180px }
+.list{ max-height:420px; overflow:auto; margin:0; padding:0; list-style:none }
+.li{ display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border) }
+.nick{ font-weight:700 }
+.sub{ flex:1 }
+.time.badge{ background:#4b3626; border:1px solid var(--border); border-radius:999px; padding:4px 10px; font-size:12px }
+.pager{ justify-content:center; margin-top:10px }
 
-.intro{ color:var(--muted); }
+.mebox .rows{ display:grid; grid-template-columns:auto 1fr; gap:8px 12px; margin-top:8px }
+.mebox .label{ display:inline-block; min-width:84px; color:var(--muted) }
+.state{ font-weight:800; margin-bottom:6px }
 
 /* =========
   Steps
@@ -185,6 +208,9 @@ img{ max-width:100%; display:block; }
 /* =========
   Responsive
 ========= */
+@media (max-width: 1080px){
+  .nav{ gap:12px; }
+}
 @media (max-width: 920px){
   .nav{ position:fixed; inset:60px 0 auto; background:rgba(16,15,13,.98); backdrop-filter: blur(10px);
         padding:16px; flex-direction:column; gap:12px; border-bottom:1px solid var(--border);

@@ -8,27 +8,24 @@
   <!-- SEO -->
   <meta name="description" content="오직 람쥐 서버에서만 경험할 수 있는 힐링 야생 RPG. 서버 주소 lconlin.kro.kr · 버전 1.21.4 · 던전 레이드 · 제작 아이템 · 위키 제공." />
   <meta name="keywords" content="람쥐 서버, 힐링 야생, RPG, 마인크래프트 서버, 레이드, 위키" />
-  <link rel="icon" type="image/png" href="ramjwi_logo.png" />
+  <link rel="icon" type="image/png" href="assets/ramjwi_logo.png" />
   <meta property="og:title" content="람쥐 서버 | 힐링 야생 RPG" />
   <meta property="og:description" content="오직 람쥐 서버에서만 경험할 수 있는 힐링 야생 RPG. 지금 디스코드 참여 & 사전예약!" />
-  <meta property="og:image" content="ramjwi_logo.png" />
+  <meta property="og:image" content="assets/ramjwi_logo.png" />
   <meta property="og:type" content="website" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <style>
-    /* Small critical styles for no-FOUC experience */
-    html { scroll-behavior: smooth; }
-  </style>
+  <style>html{scroll-behavior:smooth}</style>
 </head>
 <body>
   <!-- Header -->
   <header class="site-header">
     <div class="container header-inner">
       <a href="#home" class="brand">
-        <img src="ramjwi_logo.png" alt="람쥐 서버 로고" class="brand-logo" />
+        <img src="assets/ramjwi_logo.png" alt="람쥐 서버 로고" class="brand-logo" />
         <span class="brand-title">람쥐 서버</span>
       </a>
 
@@ -41,6 +38,9 @@
         <a href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드</a>
         <a href="#reserve" class="btn btn--gold">사전예약</a>
       </nav>
+
+      <!-- Auth area (Discord OAuth) -->
+      <div id="authArea" class="auth"></div>
 
       <button class="hamburger" aria-controls="siteNav" aria-expanded="false" aria-label="메뉴 열기">
         <span></span><span></span><span></span>
@@ -239,12 +239,57 @@
     </div>
   </section>
 
-  <!-- Reserve -->
+  <!-- Reserve with integrated auth/list/check -->
   <section class="section" id="reserve">
     <div class="container">
       <h2 class="section-title">사전예약</h2>
-      <p>아래 버튼을 눌러 예약 절차를 진행하세요. 닉네임과 디스코드 연동이 필요합니다.</p>
-      <div class="reserve-cta">
+
+      <div class="grid two">
+        <div class="card">
+          <h3>내 예약 상태</h3>
+          <div id="meBox" class="mebox muted">로그인하면 예약 상태를 표시합니다.</div>
+          <p class="small muted">※ 사전예약은 디스코드 서버 내 <b>/사전예약패널</b> → <b>사전 예약하기</b> 버튼으로 진행됩니다.</p>
+        </div>
+
+        <div class="card">
+          <h3>닉네임 확인</h3>
+          <div class="row">
+            <input id="mcName" placeholder="마크 닉네임 (3~16자)" maxlength="16"/>
+            <button class="btn btn--ghost" id="btnCheck">닉네임 확인</button>
+          </div>
+          <div id="checkResult" class="muted small" style="margin-top:8px;"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="list-head">
+          <h3>사전예약 명단</h3>
+          <div class="list-head-tools row">
+            <label class="muted small">정렬</label>
+            <select id="sortBy">
+              <option value="latest">최신 등록순</option>
+              <option value="oldest">오래된 등록순</option>
+              <option value="nick">닉네임 A→Z</option>
+              <option value="mc">마크닉 A→Z</option>
+            </select>
+            <label class="muted small">페이지</label>
+            <select id="pageSize">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="50">50</option>
+            </select>
+            <input id="searchInput" class="search" placeholder="닉네임 검색">
+          </div>
+        </div>
+        <ul id="list" class="list"><li class="muted">불러오는 중.</li></ul>
+        <div class="pager row">
+          <button class="btn btn--ghost" id="prevBtn">이전</button>
+          <span id="pageInfo" class="muted small">1 / 1</span>
+          <button class="btn btn--ghost" id="nextBtn">다음</button>
+        </div>
+      </div>
+
+      <div class="reserve-cta" style="margin-top:16px;">
         <a class="btn btn--primary" href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드에서 예약하기</a>
         <a class="btn btn--ghost" href="#guide">시작 가이드 보기</a>
       </div>
@@ -255,10 +300,10 @@
   <footer class="site-footer">
     <div class="container footer-inner">
       <div class="footer-brand">
-        <img src="ramjwi_logo.png" alt="" aria-hidden="true">
+        <img src="assets/ramjwi_logo.png" alt="" aria-hidden="true">
         <div>
           <strong>람쥐 서버</strong>
-          <div class="muted">© 2025 Ramjwi Server. All rights reserved.</div>
+          <div class="muted">© <span id="year"></span> Ramjwi Server. All rights reserved.</div>
         </div>
       </div>
       <nav class="footer-nav">
@@ -272,6 +317,178 @@
   </footer>
 
   <script>
+    // ---- API endpoints (must exist on backend) ----
+    const api = {
+      list: "/api/list",
+      me: "/api/me",
+      validate: (name) => `/api/validate-name?name=${encodeURIComponent(name)}`,
+      login: "/auth/login",
+      logout: "/auth/logout",
+    };
+
+    const el = (q) => document.querySelector(q);
+
+    async function fetchJSON(url){
+      const r = await fetch(url, { credentials: "include" });
+      if(!r.ok) throw new Error("fetch failed");
+      return await r.json();
+    }
+
+    // ---- Auth & Me Box ----
+    async function loadAuth(){
+      const area = el("#authArea");
+      try{
+        const me = await fetchJSON(api.me); // { ok: boolean, user?: { id, username, global_name, avatar }, reserved?: {...}, mc_name }
+        if(me && me.ok){
+          const p = me.user || {};
+          area.innerHTML = `
+            <div class="auth">
+              <img class="avatar" src="https://cdn.discordapp.com/avatars/${p.id}/${p.avatar}.png?size=64" onerror="this.style.display='none'" alt="avatar">
+              <div class="who">
+                <div class="name">${p.global_name || p.username}</div>
+                <a class="link" href="${api.logout}">로그아웃</a>
+              </div>
+            </div>`;
+
+          const box = el("#meBox");
+          if(me.reserved){
+            const r = me.reserved;
+            box.innerHTML = `
+              <div class="me">
+                <div class="state ok">✅ 사전예약 완료</div>
+                <div class="rows">
+                  <div><span class="label">닉네임</span><span><b>${me.user.global_name || me.user.username}</b></span></div>
+                  <div><span class="label">마크 닉네임</span><span><b>${r.mc_name}</b></span></div>
+                  <div><span class="label">등록 시각</span><span>${fmtTime(r.created_at)}</span></div>
+                </div>
+              </div>`;
+          }else{
+            box.innerHTML = `
+              <div class="me">
+                <div class="state warn">⏳ 아직 사전예약 전</div>
+                <div class="rows">
+                  <div><span class="label">안내</span><span>디스코드에서 <b>/사전예약패널</b> → <b>사전 예약하기</b> 버튼으로 신청하세요.</span></div>
+                </div>
+              </div>`;
+          }
+        }else{
+          area.innerHTML = `<a class="btn btn--gold" href="${api.login}">Discord로 로그인</a>`;
+          el("#meBox").innerHTML = `로그인하면 내 예약 상태를 확인할 수 있습니다.`;
+        }
+      }catch(e){
+        el("#authArea").innerHTML = `<span class="muted small">인증 정보를 불러올 수 없습니다.</span>`;
+      }
+    }
+
+    function fmtTime(t){
+      try{
+        const d = new Date(t);
+        const pad = (n)=> String(n).padStart(2,"0");
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }catch(_){ return String(t); }
+    }
+
+    // ---- List with sort/filter/pagination ----
+    let rawList = [];
+    let filtered = [];
+    let current = 1;
+    let pageSize = 20;
+    const sortSel = ()=> el("#sortBy");
+    const sizeSel = ()=> el("#pageSize");
+    const pageInfo = ()=> el("#pageInfo");
+
+    function sortData(arr){
+      const v = sortSel().value;
+      const a = [...arr];
+      if(v === "latest"){
+        a.sort((x,y)=> new Date(y.created_at) - new Date(x.created_at));
+      }else if(v === "oldest"){
+        a.sort((x,y)=> new Date(x.created_at) - new Date(y.created_at));
+      }else if(v === "nick"){
+        a.sort((x,y)=> (x.nickname||"").localeCompare(y.nickname||""));
+      }else if(v === "mc"){
+        a.sort((x,y)=> (x.mc_name||"").localeCompare(y.mc_name||""));
+      }
+      return a;
+    }
+    function applyFilter(){
+      const q = el("#searchInput").value.trim().toLowerCase();
+      filtered = sortData(
+        rawList.filter(x => {
+          const a = (x.nickname||"").toLowerCase();
+          const b = (x.mc_name||"").toLowerCase();
+          return !q || a.includes(q) || b.includes(q);
+        })
+      );
+      current = 1;
+      renderPage();
+    }
+    function renderPage(){
+      const total = filtered.length;
+      const pages = Math.max(1, Math.ceil(total / pageSize));
+      if(current > pages) current = pages;
+      const start = (current-1)*pageSize;
+      const pageItems = filtered.slice(start, start+pageSize);
+
+      const ul = el("#list");
+      if(!pageItems.length){
+        ul.innerHTML = `<li class="muted">명단이 비었거나 조건에 맞는 결과가 없습니다.</li>`;
+      }else{
+        ul.innerHTML = pageItems.map(x => `
+          <li class="li">
+            <div class="nick">${x.nickname}</div>
+            <div class="sub muted">(MC: ${x.mc_name})</div>
+            <div class="time badge">${fmtTime(x.created_at)}</div>
+          </li>
+        `).join("");
+      }
+      pageInfo().textContent = `${current} / ${pages}`;
+    }
+
+    async function loadList(){
+      try{
+        rawList = await fetchJSON(api.list);
+        applyFilter();
+      }catch(e){
+        el("#list").innerHTML = `<li class="muted">불러오기 실패</li>`;
+      }
+    }
+
+    // Events
+    document.addEventListener("input", (ev)=>{
+      if(ev.target && ev.target.id === "searchInput") applyFilter();
+    });
+    document.addEventListener("change", (ev)=>{
+      if(ev.target && ev.target.id === "sortBy") applyFilter();
+      if(ev.target && ev.target.id === "pageSize"){
+        pageSize = parseInt(ev.target.value,10) || 20;
+        current = 1; renderPage();
+      }
+    });
+    document.addEventListener("click", (ev)=>{
+      if(ev.target && ev.target.id === "prevBtn"){ if(current>1){ current--; renderPage(); } }
+      if(ev.target && ev.target.id === "nextBtn"){ current++; renderPage(); }
+    });
+
+    // Check name
+    document.addEventListener("click", async (ev)=>{
+      if(ev.target && ev.target.id === "btnCheck"){
+        const name = el("#mcName").value.trim();
+        if(!name){ alert("닉네임을 입력하세요."); return; }
+        const btn = ev.target; btn.disabled = true;
+        try{
+          const r = await fetchJSON(api.validate(name));
+          el("#checkResult").textContent = r.ok ? `✅ 실존 계정: ${r.name}` : "❌ 존재하지 않는 닉네임";
+          el("#checkResult").className = r.ok ? "ok small" : "err small";
+        }catch(e){
+          el("#checkResult").textContent = "⚠️ 확인 실패";
+          el("#checkResult").className = "warn small";
+        }finally{
+          btn.disabled = false;
+        }
+      }
+    });
+
     // Mobile nav
     const hamburger = document.querySelector('.hamburger');
     const nav = document.getElementById('siteNav');
@@ -281,14 +498,22 @@
       nav.classList.toggle('is-open');
       document.body.classList.toggle('no-scroll');
     });
+    // Close mobile nav on link click
+    document.querySelectorAll('#siteNav a').forEach(a => {
+      a.addEventListener('click', () => {
+        nav.classList.remove('is-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('no-scroll');
+      });
+    });
 
     // Copy server IP
     const copyBtns = document.querySelectorAll('.copy');
     copyBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const sel = btn.getAttribute('data-copy');
-        const el = document.querySelector(sel);
-        const text = el ? el.textContent.trim() : '';
+        const elx = document.querySelector(sel);
+        const text = elx ? elx.textContent.trim() : '';
         navigator.clipboard.writeText(text).then(() => {
           const old = btn.textContent;
           btn.textContent = '복사됨!';
@@ -298,27 +523,10 @@
       });
     });
 
-    // Tabs
-    const tabs = document.querySelectorAll('.tab');
-    const panels = document.querySelectorAll('.panel');
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('is-active'));
-        panels.forEach(p => p.classList.remove('is-active'));
-        tab.classList.add('is-active');
-        const id = tab.getAttribute('data-tab');
-        document.getElementById(id).classList.add('is-active');
-      });
-    });
-
-    // Close mobile nav on link click
-    document.querySelectorAll('#siteNav a').forEach(a => {
-      a.addEventListener('click', () => {
-        nav.classList.remove('is-open');
-        hamburger.setAttribute('aria-expanded', 'false');
-        document.body.classList.remove('no-scroll');
-      });
-    });
+    // Init
+    document.getElementById("year").textContent = (new Date()).getFullYear();
+    loadAuth();
+    loadList();
   </script>
 </body>
 </html>
