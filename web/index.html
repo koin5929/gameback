@@ -1,272 +1,324 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>람쥐 서버 · 힐링 야생 RPG · 사전예약</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>람쥐 서버 | 힐링 야생 RPG 공식 홈페이지</title>
+
+  <!-- SEO -->
+  <meta name="description" content="오직 람쥐 서버에서만 경험할 수 있는 힐링 야생 RPG. 서버 주소 lconlin.kro.kr · 버전 1.21.4 · 던전 레이드 · 제작 아이템 · 위키 제공." />
+  <meta name="keywords" content="람쥐 서버, 힐링 야생, RPG, 마인크래프트 서버, 레이드, 위키" />
+  <link rel="icon" type="image/png" href="ramjwi_logo.png" />
+  <meta property="og:title" content="람쥐 서버 | 힐링 야생 RPG" />
+  <meta property="og:description" content="오직 람쥐 서버에서만 경험할 수 있는 힐링 야생 RPG. 지금 디스코드 참여 & 사전예약!" />
+  <meta property="og:image" content="ramjwi_logo.png" />
+  <meta property="og:type" content="website" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&family=Marcellus&display=swap" rel="stylesheet">
-  <!-- Fallback inline style to avoid white screen if CSS fails -->
-  <style>body{background:#2b1e12;color:#faefe3}</style>
-  <link rel="stylesheet" href="/style.css?v=3">
-  <meta name="theme-color" content="#3b2a1b">
+  <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Small critical styles for no-FOUC experience */
+    html { scroll-behavior: smooth; }
+  </style>
 </head>
 <body>
-  <div class="bg">
-    <div class="texture"></div>
-    <div class="vignette"></div>
-  </div>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#home" class="brand">
+        <img src="ramjwi_logo.png" alt="람쥐 서버 로고" class="brand-logo" />
+        <span class="brand-title">람쥐 서버</span>
+      </a>
 
-  <header class="header wrap">
-    <div class="brand">
-      <img class="logo-img" src="/assets/ramjwi_logo.png" alt="람쥐 서버 로고" onerror="this.style.display='none'"/>
-      <div class="brand-text">
-        <div class="logo">람쥐 서버</div>
-        <div class="subtitle">힐링 야생 RPG · 사전예약</div>
-      </div>
+      <nav class="nav" id="siteNav" aria-label="주요">
+        <a href="#home">홈</a>
+        <a href="#about">서버 소개</a>
+        <a href="#guide">시작 가이드</a>
+        <a href="#wiki">위키</a>
+        <a href="#news">소식</a>
+        <a href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드</a>
+        <a href="#reserve" class="btn btn--gold">사전예약</a>
+      </nav>
+
+      <button class="hamburger" aria-controls="siteNav" aria-expanded="false" aria-label="메뉴 열기">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-    <div id="authArea" class="auth"></div>
   </header>
 
-  <main class="wrap fade-in">
-    <section class="hero card glass raise">
-      <div class="hero-left">
-        <h1>포근한 힐링과 모험이 공존하는 야생 RPG</h1>
-        <p class="muted">디스코드에서 “사전 예약하기” 버튼으로 참여한 뒤, 아래에서 내 상태를 확인하세요.</p>
-        <div class="badges">
-          <span class="badge">야생</span>
-          <span class="badge">RPG</span>
-          <span class="badge">힐링</span>
-          <span class="badge">멀티플레이</span>
-        </div>
-        <a class="btn invite pulse" href="https://discord.gg/FVXQN8ry" target="_blank" rel="noopener">디스코드 초대 참여</a>
+  <!-- Hero -->
+  <section id="home" class="hero">
+    <div class="hero-bg">
+      <img src="wood.svg" alt="" aria-hidden="true">
+    </div>
+    <div class="container hero-inner">
+      <p class="badge">힐링 야생 RPG</p>
+      <h1>오직 람쥐 서버에서만 경험할 수 있는<br><span class="accent">힐링·성장·모험</span></h1>
+      <p class="lead">여유로운 야생의 일상과 RPG의 짜릿한 보스 레이드가 만나는 곳. 함께 만들고 함께 노는, 우리만의 월드.</p>
+
+      <div class="hero-cta">
+        <a class="btn btn--primary" href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드 참여</a>
+        <a class="btn btn--ghost" href="#reserve">사전예약</a>
       </div>
 
-      <div class="check">
-        <div class="row">
-          <input id="mcName" placeholder="마크 닉네임 (3~16자)" maxlength="16"/>
-          <button class="btn ghost" id="btnCheck">닉네임 확인</button>
+      <div class="server-chip" role="group" aria-label="서버 접속 정보">
+        <div class="chip">
+          <span class="chip-title">버전</span>
+          <strong>1.21.4</strong>
         </div>
-        <div id="checkResult" class="muted small"></div>
-      </div>
-    </section>
-
-    <section class="grid">
-      <div class="card glass raise">
-        <h3>내 예약 상태</h3>
-        <div id="meBox" class="mebox muted">로그인하면 예약 상태를 표시합니다.</div>
-        <div class="hint small muted">※ 사전예약은 디스코드 서버 내 <b>/사전예약패널</b> → <b>사전 예약하기</b> 버튼으로 진행됩니다.</div>
-      </div>
-
-      <div class="card glass raise">
-        <div class="list-head">
-          <h3>사전예약 명단</h3>
-          <div class="list-head-tools row">
-            <label class="muted small">정렬</label>
-            <select id="sortBy">
-              <option value="latest">최신 등록순</option>
-              <option value="oldest">오래된 등록순</option>
-              <option value="nick">닉네임 A→Z</option>
-              <option value="mc">마크닉 A→Z</option>
-            </select>
-            <label class="muted small">페이지</label>
-            <select id="pageSize">
-              <option value="10">10</option>
-              <option value="20" selected>20</option>
-              <option value="50">50</option>
-            </select>
-            <input id="searchInput" class="search" placeholder="닉네임 검색">
-          </div>
-        </div>
-        <ul id="list" class="list"><li class="muted">불러오는 중...</li></ul>
-        <div class="pager row">
-          <button class="btn ghost" id="prevBtn">이전</button>
-          <span id="pageInfo" class="muted small">1 / 1</span>
-          <button class="btn ghost" id="nextBtn">다음</button>
+        <div class="chip">
+          <span class="chip-title">서버 주소</span>
+          <code id="server-ip">lconlin.kro.kr</code>
+          <button class="copy" data-copy="#server-ip" aria-label="서버 주소 복사">복사</button>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
 
-  <footer class="wrap footer">
-    <div>© <span id="year"></span> 람쥐 서버 · Healing Survival RPG</div>
-    <div class="muted small">Discord 로그인 시 아바타/닉네임 및 예약 상태가 표시됩니다.</div>
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="container">
+      <h2 class="section-title">왜 람쥐 서버인가요?</h2>
+      <div class="grid features">
+        <article class="card">
+          <h3>힐링 야생</h3>
+          <p>채집·건축·낚시로 여유를 즐기고, 커뮤니티 중심의 소셜 플레이를 권장합니다.</p>
+        </article>
+        <article class="card">
+          <h3>RPG 성장</h3>
+          <p>장비 티어, 제작 아이템, 일일 퀘스트·패스로 꾸준히 성장하세요.</p>
+        </article>
+        <article class="card">
+          <h3>보스 레이드</h3>
+          <p>층별 공략이 있는 던전 시스템. 스켈레톤 왕부터 유령 기사까지 단계별 도전!</p>
+        </article>
+        <article class="card">
+          <h3>안정적인 운영</h3>
+          <p>지속적인 업데이트 로드맵과 활발한 디스코드 운영으로 오래 가는 서버를 지향합니다.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section" id="about">
+    <div class="container">
+      <h2 class="section-title">서버 소개</h2>
+      <p class="intro">
+        람쥐 서버는 “야생의 자유”와 “RPG의 목적성”을 결합한 하이브리드 플레이를 제공합니다.
+        누구나 가볍게 시작해도, 던전과 레이드, 제작과 경제를 통해 진지하게 파고들 수 있는 구조로 설계되었습니다.
+        적정 난이도와 깔끔한 밸런스를 바탕으로, <strong>‘편안하지만 심심하지 않은’</strong> 경험을 선사합니다.
+      </p>
+
+      <div class="grid two">
+        <div>
+          <h3>핵심 시스템</h3>
+          <ul class="check">
+            <li>제작 아이템/장비 티어(가죽→사슬→철→금→다이아)</li>
+            <li>던전 레이드(3단계 보스 라인업)</li>
+            <li>일일퀘스트 & 시즌 패스</li>
+            <li>야생 던전 & 오픈 월드 탐험</li>
+          </ul>
+        </div>
+        <div>
+          <h3>레이드 프리뷰</h3>
+          <ul class="boss">
+            <li><strong>1단계</strong> 스켈레톤 왕 — HP 222 / AT 5</li>
+            <li><strong>2단계</strong> 스켈레톤 왕(강화) — HP 444 / AT 7</li>
+            <li><strong>3단계</strong> 유령 기사 — HP 777 / AT 9</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guide -->
+  <section class="section" id="guide">
+    <div class="container">
+      <h2 class="section-title">시작 가이드</h2>
+      <ol class="steps">
+        <li><span>①</span> <a href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드 참여</a> 후 공지 확인</li>
+        <li><span>②</span> <a href="#reserve">사전예약</a>을 완료해 시작 보상 예약</li>
+        <li><span>③</span> 게임에서 <code>lconlin.kro.kr</code> 접속 (버전 1.21.4)</li>
+        <li><span>④</span> 첫 퀘스트와 튜토리얼로 월드에 적응</li>
+      </ol>
+      <div class="note">사전예약 시 <strong>‘시작의 치장 세트’</strong> 지급: 낚싯대 스킨 + 시작의 모자</div>
+    </div>
+  </section>
+
+  <!-- Wiki -->
+  <section class="section" id="wiki">
+    <div class="container">
+      <h2 class="section-title">위키</h2>
+
+      <div class="tabs" role="tablist">
+        <button class="tab is-active" role="tab" aria-selected="true" data-tab="tab-craft">제작 아이템</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="tab-world">월드</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="tab-commands">명령어</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="tab-raid">던전 레이드</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="tab-daily">일일퀘스트/패스</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="tab-wilderness">야생 던전</button>
+      </div>
+
+      <div class="tab-panels">
+        <div id="tab-craft" class="panel is-active">
+          <h3>장비 티어(요약)</h3>
+          <ul class="gear">
+            <li>가죽: 체력 +1.0 / 방어 +0.5 (COMMON) → 체력 +1.5 (UNCOMMON)</li>
+            <li>사슬: 체력 +2.0 / 방어 +1.0 (COMMON) → 체력 +2.5 (UNCOMMON)</li>
+            <li>철: 체력 +3.0 / 방어 +1.5 (COMMON) → 체력 +4.0 (UNCOMMON)</li>
+            <li>금: 체력 +3.5 / 방어 +1.2 (COMMON) → 체력 +5.0 (UNCOMMON)</li>
+            <li>다이아: 체력 +7.0 / 방어 +2.0 (COMMON) → 체력 +8.0 (UNCOMMON)</li>
+          </ul>
+          <p class="muted">※ 세부 YAML 스펙은 아이템 탭/문서에서 계속 업데이트됩니다.</p>
+        </div>
+
+        <div id="tab-world" class="panel">
+          <h3>월드</h3>
+          <p>야생 위주의 오픈 월드. 거점 마을과 사냥터, 초보자용 필드 던전이 각 지역에 배치됩니다.</p>
+        </div>
+
+        <div id="tab-commands" class="panel">
+          <h3>명령어 정리</h3>
+          <ul>
+            <li><code>/spawn</code> 스폰으로 돌아가기</li>
+            <li><code>/home</code> 집으로 귀환</li>
+            <li><code>/party</code> 파티 관리</li>
+            <li><code>/trade</code> 안전 거래</li>
+          </ul>
+        </div>
+
+        <div id="tab-raid" class="panel">
+          <h3>던전 레이드</h3>
+          <ul class="boss">
+            <li><strong>1단계</strong> 스켈레톤 왕 — HP 222 / AT 5</li>
+            <li><strong>2단계</strong> 스켈레톤 왕(강화) — HP 444 / AT 7</li>
+            <li><strong>3단계</strong> 유령 기사 — HP 777 / AT 9</li>
+          </ul>
+
+          <h4>대표 전리품(예시)</h4>
+          <ul class="loot">
+            <li>스켈레톤 왕의 부서진 보주 (COMMON)</li>
+            <li>스켈레톤 왕의 보주 (UNCOMMON)</li>
+          </ul>
+        </div>
+
+        <div id="tab-daily" class="panel">
+          <h3>일일퀘스트 & 패스</h3>
+          <p>매일 갱신되는 간단한 반복 퀘스트로 패스 포인트를 모으고, 시즌 보상을 교환하세요.</p>
+        </div>
+
+        <div id="tab-wilderness" class="panel">
+          <h3>야생 던전</h3>
+          <p>월드 곳곳에 숨은 소규모 던전. 채집/전투 혼합 구조로 솔플·듀오 모두 즐길 수 있습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- News -->
+  <section class="section" id="news">
+    <div class="container">
+      <h2 class="section-title">소식 & 공지</h2>
+      <div class="grid news">
+        <article class="card">
+          <h3>오픈 전 이벤트</h3>
+          <p>사전 후원 시 <strong>+20%</strong> 보너스 제공! 디스코드 공지에서 상세 조건을 확인하세요.</p>
+        </article>
+        <article class="card">
+          <h3>사전예약 보상</h3>
+          <p>사전예약만 하면 <strong>시작의 치장 세트</strong> 지급: 낚싯대 스킨 + 시작의 모자.</p>
+        </article>
+        <article class="card">
+          <h3>디스코드 활동 보상</h3>
+          <p>디스코드 채팅 레벨 10 달성 시 <strong>아이콘 칭호</strong>를 드립니다.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reserve -->
+  <section class="section" id="reserve">
+    <div class="container">
+      <h2 class="section-title">사전예약</h2>
+      <p>아래 버튼을 눌러 예약 절차를 진행하세요. 닉네임과 디스코드 연동이 필요합니다.</p>
+      <div class="reserve-cta">
+        <a class="btn btn--primary" href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드에서 예약하기</a>
+        <a class="btn btn--ghost" href="#guide">시작 가이드 보기</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="ramjwi_logo.png" alt="" aria-hidden="true">
+        <div>
+          <strong>람쥐 서버</strong>
+          <div class="muted">© 2025 Ramjwi Server. All rights reserved.</div>
+        </div>
+      </div>
+      <nav class="footer-nav">
+        <a href="#about">서버 소개</a>
+        <a href="#guide">시작 가이드</a>
+        <a href="#wiki">위키</a>
+        <a href="#news">소식</a>
+        <a href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드</a>
+      </nav>
+    </div>
   </footer>
 
   <script>
-    const api = {
-      list: "/api/list",
-      me: "/api/me",
-      validate: (name) => `/api/validate-name?name=${encodeURIComponent(name)}`,
-      login: "/auth/login",
-      logout: "/auth/logout",
-    };
-
-    const el = (q) => document.querySelector(q);
-
-    async function fetchJSON(url){
-      const r = await fetch(url, {credentials: "include"});
-      if(!r.ok) throw new Error("fetch failed");
-      return await r.json();
-    }
-
-    function fmtTime(iso){
-      try{
-        const d = new Date(iso);
-        const y = d.getFullYear();
-        const m = String(d.getMonth()+1).padStart(2, "0");
-        const dd = String(d.getDate()).padStart(2, "0");
-        const hh = String(d.getHours()).padStart(2, "0");
-        const mm = String(d.getMinutes()).padStart(2, "0");
-        return `${y}-${m}-${dd} ${hh}:${mm}`;
-      }catch(e){ return iso; }
-    }
-
-    // ---- Auth + Me ----
-    async function loadAuth(){
-      try{
-        const me = await fetchJSON(api.me);
-        const area = el("#authArea");
-        if(me.loggedIn){
-          const p = me.profile;
-          area.innerHTML = `
-            <img class="avatar" src="${p.avatar_url}" alt="avatar"/>
-            <div class="who">
-              <div class="name">${p.global_name || p.username}</div>
-              <a class="link small muted" href="${api.logout}">로그아웃</a>
-            </div>
-          `;
-          const box = el("#meBox");
-          if(me.reserved){
-            const r = me.reservation;
-            box.innerHTML = `
-              <div class="me">
-                <div class="state ok">✅ 사전예약 완료</div>
-                <div class="rows">
-                  <div><span class="label">디스코드</span><span>${p.global_name || p.username}</span></div>
-                  <div><span class="label">마크 닉네임</span><span><b>${r.mc_name}</b></span></div>
-                  <div><span class="label">등록 시각</span><span>${fmtTime(r.created_at)}</span></div>
-                </div>
-              </div>`;
-          }else{
-            box.innerHTML = `
-              <div class="me">
-                <div class="state warn">⏳ 아직 사전예약 전</div>
-                <div class="rows">
-                  <div><span class="label">안내</span><span>디스코드에서 <b>/사전예약패널</b> → <b>사전 예약하기</b> 버튼으로 신청하세요.</span></div>
-                </div>
-              </div>`;
-          }
-        }else{
-          area.innerHTML = `<a class="btn" href="${api.login}">Discord로 로그인</a>`;
-          el("#meBox").innerHTML = `로그인하면 내 예약 상태를 확인할 수 있습니다.`;
-        }
-      }catch(e){
-        el("#authArea").innerHTML = `<span class="muted small">인증 정보를 불러올 수 없습니다.</span>`;
-      }
-    }
-
-    // ---- List with sort/filter/pagination ----
-    let rawList = [];
-    let filtered = [];
-    let current = 1;
-    let pageSize = 20;
-    const sortSel = el("#sortBy");
-    const sizeSel = el("#pageSize");
-    const pageInfo = el("#pageInfo");
-
-    function sortData(arr){
-      const v = sortSel.value;
-      const a = [...arr];
-      if(v === "latest"){
-        a.sort((x,y)=> new Date(y.created_at) - new Date(x.created_at));
-      }else if(v === "oldest"){
-        a.sort((x,y)=> new Date(x.created_at) - new Date(y.created_at));
-      }else if(v === "nick"){
-        a.sort((x,y)=> (x.nickname||"").localeCompare(y.nickname||""));
-      }else if(v === "mc"){
-        a.sort((x,y)=> (x.mc_name||"").localeCompare(y.mc_name||""));
-      }
-      return a;
-    }
-
-    function renderPage(){
-      const total = filtered.length;
-      const pages = Math.max(1, Math.ceil(total / pageSize));
-      if(current > pages) current = pages;
-      const start = (current-1)*pageSize;
-      const pageItems = filtered.slice(start, start+pageSize);
-
-      const ul = el("#list");
-      if(!pageItems.length){
-        ul.innerHTML = `<li class="muted">명단이 비었거나 조건에 맞는 결과가 없습니다.</li>`;
-      }else{
-        ul.innerHTML = pageItems.map(x => `
-          <li class="li">
-            <div class="nick">${x.nickname}</div>
-            <div class="sub muted">(MC: ${x.mc_name})</div>
-            <div class="time badge">${fmtTime(x.created_at)}</div>
-          </li>
-        `).join("");
-      }
-      pageInfo.textContent = `${current} / ${pages}`;
-    }
-
-    function applyFilter(){
-      const q = (el("#searchInput").value||"").trim().toLowerCase();
-      const sorted = sortData(rawList);
-      if(!q){
-        filtered = sorted;
-      }else{
-        filtered = sorted.filter(x =>
-          (x.nickname||"").toLowerCase().includes(q) ||
-          (x.mc_name||"").toLowerCase().includes(q)
-        );
-      }
-      current = 1;
-      renderPage();
-    }
-
-    async function loadList(){
-      try{
-        rawList = await fetchJSON(api.list);
-        applyFilter();
-      }catch(e){
-        el("#list").innerHTML = `<li class="muted">불러오기 실패</li>`;
-      }
-    }
-
-    // Events
-    el("#searchInput").addEventListener("input", applyFilter);
-    sortSel.addEventListener("change", applyFilter);
-    sizeSel.addEventListener("change", ()=>{
-      pageSize = parseInt(sizeSel.value,10) || 20;
-      current = 1; renderPage();
+    // Mobile nav
+    const hamburger = document.querySelector('.hamburger');
+    const nav = document.getElementById('siteNav');
+    hamburger.addEventListener('click', () => {
+      const expanded = hamburger.getAttribute('aria-expanded') === 'true';
+      hamburger.setAttribute('aria-expanded', String(!expanded));
+      nav.classList.toggle('is-open');
+      document.body.classList.toggle('no-scroll');
     });
-    el("#prevBtn").addEventListener("click", ()=>{ if(current>1){ current--; renderPage(); } });
-    el("#nextBtn").addEventListener("click", ()=>{ current++; renderPage(); });
 
-    // Check name
-    el("#btnCheck").onclick = async () => {
-      const name = el("#mcName").value.trim();
-      if(!name){ alert("닉네임을 입력하세요."); return; }
-      const btn = el("#btnCheck"); btn.disabled = true;
-      try{
-        const r = await fetchJSON(api.validate(name));
-        el("#checkResult").textContent = r.ok ? `✅ 실존 계정: ${r.name}` : "❌ 존재하지 않는 닉네임";
-        el("#checkResult").className = r.ok ? "ok small" : "err small";
-      }catch(e){
-        el("#checkResult").textContent = "⚠️ 확인 실패";
-        el("#checkResult").className = "warn small";
-      }finally{
-        btn.disabled = false;
-      }
-    };
+    // Copy server IP
+    const copyBtns = document.querySelectorAll('.copy');
+    copyBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sel = btn.getAttribute('data-copy');
+        const el = document.querySelector(sel);
+        const text = el ? el.textContent.trim() : '';
+        navigator.clipboard.writeText(text).then(() => {
+          const old = btn.textContent;
+          btn.textContent = '복사됨!';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 1400);
+        });
+      });
+    });
 
-    document.getElementById("year").textContent = (new Date()).getFullYear();
-    loadAuth();
-    loadList();
+    // Tabs
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('is-active'));
+        panels.forEach(p => p.classList.remove('is-active'));
+        tab.classList.add('is-active');
+        const id = tab.getAttribute('data-tab');
+        document.getElementById(id).classList.add('is-active');
+      });
+    });
+
+    // Close mobile nav on link click
+    document.querySelectorAll('#siteNav a').forEach(a => {
+      a.addEventListener('click', () => {
+        nav.classList.remove('is-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('no-scroll');
+      });
+    });
   </script>
 </body>
 </html>
