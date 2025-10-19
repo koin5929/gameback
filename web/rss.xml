@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Ramji 공식 뉴스 피드</title>
+    <link>https://ramji.o-r.kr</link>
+    <description>Ramji 서버의 최신 소식 및 업데이트를 전해드립니다.</description>
+    <language>ko-kr</language>
+    <item>
+      <title>신규 지역 '천상의 정원' 업데이트</title>
+      <link>https://ramji.o-r.kr/news/heavenly-garden</link>
+      <description>Ramji 서버에 신규 지역 '천상의 정원'이 추가되었습니다.</description>
+      <pubDate>Sun, 19 Oct 2025 15:00:00 +0900</pubDate>
+    </item>
+    <item>
+      <title>길드 시스템 정식 오픈</title>
+      <link>https://ramji.o-r.kr/news/guild-system</link>
+      <description>플레이어가 직접 길드를 창설하고 시련의 탑에 도전할 수 있는 시스템이 오픈되었습니다.</description>
+      <pubDate>Sat, 18 Oct 2025 15:00:00 +0900</pubDate>
+    </item>
+  </channel>
+</rss>
