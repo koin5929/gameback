@@ -5,20 +5,65 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>람쥐 서버 | 힐링 야생 RPG 공식 홈페이지</title>
 
+  <!-- Indexing -->
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <link rel="canonical" href="https://ramji.o-r.kr/" />
+  <link rel="alternate" hreflang="ko" href="https://ramji.o-r.kr/" />
+
   <!-- SEO -->
-  <meta name="description" content="오직 람쥐 서버에서만 경험할 수 있는 힐링 야생 RPG. 서버 주소 lconlin.kro.kr · 버전 1.21.4 · 던전 레이드 · 제작 아이템 · 위키 제공." />
-  <meta name="keywords" content="람쥐 서버, 힐링 야생, RPG, 마인크래프트 서버, 레이드, 위키" />
-  <link rel="icon" type="image/png" href="assets/ramjwi_logo.png" />
+  <meta name="description" content="람쥐 서버 — 힐링 야생과 RPG가 만나는 마인크래프트 서버. 레이드/제작 아이템/시즌 패스. 디스코드 연동 사전예약 지원. 버전 1.21.4 · 서버 주소 lconlin.kro.kr." />
+  <meta name="keywords" content="람쥐 서버, 힐링 야생, RPG, 마인크래프트 서버, 레이드, 마크 서버추천, 마인크래프트 서버추천, 마크rpg서버, 마인크래프트rpg서버, 마크rpg서버추천, 마인크래프트rpg서버추천, 마크힐링서버, 마크힐링서버추천, 마인크래프트 힐링서버, 마인크래프트 힐링서버 추천, 마인크래프트 힐링rpg, 마크 악어의놀이터, 마크악놀서버, 악놀서버, 사전예약, 디스코드 연동, 보스 레이드" />
+  <meta name="naver-site-verification" content="39822cdde872321108efb7ad4d7b769c53908351" />
+  <meta name="google-site-verification" content="Lnp3TGxnzm5d5fjc4utHiSN-Ggz248sPH8Y4nQDfqEM" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:site_name" content="람쥐 서버" />
   <meta property="og:title" content="람쥐 서버 | 힐링 야생 RPG" />
   <meta property="og:description" content="오직 람쥐 서버에서만 경험할 수 있는 힐링 야생 RPG. 지금 디스코드 참여 & 사전예약!" />
-  <meta property="og:image" content="assets/ramjwi_logo.png" />
+  <meta property="og:image" content="https://ramji.o-r.kr/assets/ramjwi_logo.png" />
+  <meta property="og:url" content="https://ramji.o-r.kr/" />
   <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="람쥐 서버 | 힐링 야생 RPG" />
+  <meta name="twitter:description" content="힐링 야생·RPG·레이드. 디스코드 연동 사전예약!" />
+  <meta name="twitter:image" content="https://ramji.o-r.kr/assets/ramjwi_logo.png" />
 
+  <!-- Icons -->
+  <link rel="icon" type="image/png" href="assets/ramjwi_logo.png" />
+  <link rel="apple-touch-icon" href="assets/ramjwi_logo.png" />
+
+  <!-- Fonts & CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <style>html{scroll-behavior:smooth}</style>
+
+  <!-- JSON-LD: Organization & Website -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "람쥐 서버",
+    "url": "https://ramji.o-r.kr/",
+    "logo": "https://ramji.o-r.kr/assets/ramjwi_logo.png",
+    "sameAs": ["https://discord.gg/BpYQUyhrAc"]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "람쥐 서버",
+    "url": "https://ramji.o-r.kr/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://ramji.o-r.kr/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
 </head>
 <body>
   <!-- Header -->
@@ -33,7 +78,6 @@
         <a href="#home">홈</a>
         <a href="#about">서버 소개</a>
         <a href="#guide">시작 가이드</a>
-        <a href="#wiki">위키</a>
         <a href="#news">소식</a>
         <a href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드</a>
         <a href="#reserve" class="btn btn--gold">사전예약</a>
@@ -148,76 +192,6 @@
     </div>
   </section>
 
-  <!-- Wiki -->
-  <section class="section" id="wiki">
-    <div class="container">
-      <h2 class="section-title">위키</h2>
-
-      <div class="tabs" role="tablist">
-        <button class="tab is-active" role="tab" aria-selected="true" data-tab="tab-craft">제작 아이템</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="tab-world">월드</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="tab-commands">명령어</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="tab-raid">던전 레이드</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="tab-daily">일일퀘스트/패스</button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="tab-wilderness">야생 던전</button>
-      </div>
-
-      <div class="tab-panels">
-        <div id="tab-craft" class="panel is-active">
-          <h3>장비 티어(요약)</h3>
-          <ul class="gear">
-            <li>가죽: 체력 +1.0 / 방어 +0.5 (COMMON) → 체력 +1.5 (UNCOMMON)</li>
-            <li>사슬: 체력 +2.0 / 방어 +1.0 (COMMON) → 체력 +2.5 (UNCOMMON)</li>
-            <li>철: 체력 +3.0 / 방어 +1.5 (COMMON) → 체력 +4.0 (UNCOMMON)</li>
-            <li>금: 체력 +3.5 / 방어 +1.2 (COMMON) → 체력 +5.0 (UNCOMMON)</li>
-            <li>다이아: 체력 +7.0 / 방어 +2.0 (COMMON) → 체력 +8.0 (UNCOMMON)</li>
-          </ul>
-          <p class="muted">※ 세부 YAML 스펙은 아이템 탭/문서에서 계속 업데이트됩니다.</p>
-        </div>
-
-        <div id="tab-world" class="panel">
-          <h3>월드</h3>
-          <p>야생 위주의 오픈 월드. 거점 마을과 사냥터, 초보자용 필드 던전이 각 지역에 배치됩니다.</p>
-        </div>
-
-        <div id="tab-commands" class="panel">
-          <h3>명령어 정리</h3>
-          <ul>
-            <li><code>/spawn</code> 스폰으로 돌아가기</li>
-            <li><code>/home</code> 집으로 귀환</li>
-            <li><code>/party</code> 파티 관리</li>
-            <li><code>/trade</code> 안전 거래</li>
-          </ul>
-        </div>
-
-        <div id="tab-raid" class="panel">
-          <h3>던전 레이드</h3>
-          <ul class="boss">
-            <li><strong>1단계</strong> 스켈레톤 왕 — HP 222 / AT 5</li>
-            <li><strong>2단계</strong> 스켈레톤 왕(강화) — HP 444 / AT 7</li>
-            <li><strong>3단계</strong> 유령 기사 — HP 777 / AT 9</li>
-          </ul>
-
-          <h4>대표 전리품(예시)</h4>
-          <ul class="loot">
-            <li>스켈레톤 왕의 부서진 보주 (COMMON)</li>
-            <li>스켈레톤 왕의 보주 (UNCOMMON)</li>
-          </ul>
-        </div>
-
-        <div id="tab-daily" class="panel">
-          <h3>일일퀘스트 & 패스</h3>
-          <p>매일 갱신되는 간단한 반복 퀘스트로 패스 포인트를 모으고, 시즌 보상을 교환하세요.</p>
-        </div>
-
-        <div id="tab-wilderness" class="panel">
-          <h3>야생 던전</h3>
-          <p>월드 곳곳에 숨은 소규모 던전. 채집/전투 혼합 구조로 솔플·듀오 모두 즐길 수 있습니다.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- News -->
   <section class="section" id="news">
     <div class="container">
@@ -239,7 +213,7 @@
     </div>
   </section>
 
-  <!-- Reserve with integrated auth/list/check -->
+  <!-- Reserve with integrated auth/list -->
   <section class="section" id="reserve">
     <div class="container">
       <h2 class="section-title">사전예약</h2>
@@ -252,12 +226,9 @@
         </div>
 
         <div class="card">
-          <h3>닉네임 확인</h3>
-          <div class="row">
-            <input id="mcName" placeholder="마크 닉네임 (3~16자)" maxlength="16"/>
-            <button class="btn btn--ghost" id="btnCheck">닉네임 확인</button>
-          </div>
-          <div id="checkResult" class="muted small" style="margin-top:8px;"></div>
+          <h3>서버 정보 확인</h3>
+          <p class="muted">서버 정보 확인은 <strong>디스코드에서 확인 가능합니다</strong>.</p>
+          <a class="btn btn--primary" href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드 바로가기</a>
         </div>
       </div>
 
@@ -309,7 +280,6 @@
       <nav class="footer-nav">
         <a href="#about">서버 소개</a>
         <a href="#guide">시작 가이드</a>
-        <a href="#wiki">위키</a>
         <a href="#news">소식</a>
         <a href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드</a>
       </nav>
@@ -338,7 +308,7 @@
     async function loadAuth(){
       const area = el("#authArea");
       try{
-        const me = await fetchJSON(api.me); // { ok: boolean, user?: { id, username, global_name, avatar }, reserved?: {...}, mc_name }
+        const me = await fetchJSON(api.me);
         if(me && me.ok){
           const p = me.user || {};
           area.innerHTML = `
@@ -394,7 +364,6 @@
     let current = 1;
     let pageSize = 20;
     const sortSel = ()=> el("#sortBy");
-    const sizeSel = ()=> el("#pageSize");
     const pageInfo = ()=> el("#pageInfo");
 
     function sortData(arr){
@@ -460,33 +429,10 @@
     });
     document.addEventListener("change", (ev)=>{
       if(ev.target && ev.target.id === "sortBy") applyFilter();
-      if(ev.target && ev.target.id === "pageSize"){
-        pageSize = parseInt(ev.target.value,10) || 20;
-        current = 1; renderPage();
-      }
     });
     document.addEventListener("click", (ev)=>{
       if(ev.target && ev.target.id === "prevBtn"){ if(current>1){ current--; renderPage(); } }
       if(ev.target && ev.target.id === "nextBtn"){ current++; renderPage(); }
-    });
-
-    // Check name
-    document.addEventListener("click", async (ev)=>{
-      if(ev.target && ev.target.id === "btnCheck"){
-        const name = el("#mcName").value.trim();
-        if(!name){ alert("닉네임을 입력하세요."); return; }
-        const btn = ev.target; btn.disabled = true;
-        try{
-          const r = await fetchJSON(api.validate(name));
-          el("#checkResult").textContent = r.ok ? `✅ 실존 계정: ${r.name}` : "❌ 존재하지 않는 닉네임";
-          el("#checkResult").className = r.ok ? "ok small" : "err small";
-        }catch(e){
-          el("#checkResult").textContent = "⚠️ 확인 실패";
-          el("#checkResult").className = "warn small";
-        }finally{
-          btn.disabled = false;
-        }
-      }
     });
 
     // Mobile nav
