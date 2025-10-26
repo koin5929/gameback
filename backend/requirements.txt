@@ -5,3 +5,5 @@ pydantic
 python-dotenv
 httpx
 discord.py
+PyMySQL
+authlib

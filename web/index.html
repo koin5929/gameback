@@ -78,6 +78,7 @@
         <a href="#home">홈</a>
         <a href="#about">서버 소개</a>
         <a href="#guide">시작 가이드</a>
+        <a href="#bingo">빙고 포인트</a>
         <a href="#news">소식</a>
         <a href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드</a>
         <a href="#reserve" class="btn btn--gold">사전예약</a>
@@ -263,6 +264,78 @@
       <div class="reserve-cta" style="margin-top:16px;">
         <a class="btn btn--primary" href="https://discord.gg/BpYQUyhrAc" target="_blank" rel="noopener">디스코드에서 예약하기</a>
         <a class="btn btn--ghost" href="#guide">시작 가이드 보기</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bingo Section -->
+  <section class="section" id="bingo" style="background: linear-gradient(135deg, #1a0f1a 0%, #0d0a15 50%, #1a0f1a 100%); position: relative; overflow: hidden;">
+    <div style="position: absolute; inset: 0; background: radial-gradient(circle at 30% 50%, rgba(209,169,84,0.15), transparent 70%); pointer-events: none;"></div>
+    <div class="container" style="position: relative; z-index: 1;">
+      <div style="text-align: center; margin-bottom: 48px;">
+        <span class="badge" style="font-size: 14px; padding: 8px 16px;">🎁 포인트 보상 시스템</span>
+        <h2 class="section-title" style="margin-top: 16px; background: linear-gradient(135deg, #ffd57e, #D1A954, #ffd57e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">빙고 포인트 챌린지</h2>
+        <p style="color: var(--muted); max-width: 700px; margin: 16px auto; font-size: 18px;">서버에서 플레이하고 포인트를 모아<br>81칸의 빙고판에서 신비한 보상을 선택하세요!</p>
+      </div>
+
+      <!-- Login/Auth Section -->
+      <div class="card" style="margin-bottom: 32px; background: linear-gradient(135deg, rgba(209,169,84,0.1), rgba(209,169,84,0.05)); border: 2px solid var(--gold);">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+          <div id="bingoAuth">
+            <h3 style="margin: 0 0 8px; color: var(--gold-2);">마인크래프트 계정 연동</h3>
+            <p style="margin: 0; color: var(--muted); font-size: 14px;">마인크래프트 닉네임을 입력하여 포인트를 확인하세요</p>
+          </div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <input type="text" id="mcNickInput" placeholder="마인크래프트 닉네임" style="padding: 12px 16px; border-radius: 12px; background: rgba(15,15,15,0.5); border: 1px solid var(--border); color: white; min-width: 200px;">
+            <button onclick="linkMinecraft()" class="btn btn--gold" style="white-space: nowrap;">연동하기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Points Display -->
+      <div id="pointsInfo" style="display: none; margin-bottom: 32px;">
+        <div class="card" style="background: linear-gradient(135deg, var(--gold-2), var(--gold)); padding: 24px; display: flex; align-items: center; gap: 24px; border: none; box-shadow: 0 8px 24px rgba(209,169,84,0.3);">
+          <div style="font-size: 48px;">💰</div>
+          <div style="flex: 1;">
+            <div style="font-size: 14px; opacity: 0.8; margin-bottom: 4px;">보유 포인트</div>
+            <div style="font-size: 36px; font-weight: 900; color: #000;">개 포인트</div>
+            <div style="font-size: 14px; opacity: 0.7; margin-top: 4px;">30분 플레이 = 1포인트</div>
+          </div>
+          <div id="pointsValue" style="font-size: 56px; font-weight: 900; color: #000;">0</div>
+        </div>
+      </div>
+
+      <!-- Bingo Grid -->
+      <div class="card" style="padding: 32px; background: rgba(15,15,15,0.8); backdrop-filter: blur(10px);">
+        <div style="margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+            <h3 style="margin: 0; color: var(--gold-2);">빙고판 (9x9)</h3>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="badge" style="background: rgba(255,72,192,0.2); color: #ff48c0; border-color: #ff48c0;">S+ 1개</span>
+              <span class="badge" style="background: rgba(255,165,0,0.2); color: #ffa500; border-color: #ffa500;">S 3개</span>
+              <span class="badge" style="background: rgba(255,215,0,0.2); color: #ffd700; border-color: #ffd700;">A 6개</span>
+              <span class="badge" style="background: rgba(100,200,255,0.2); color: #64c8ff; border-color: #64c8ff;">B 18개</span>
+              <span class="badge" style="background: rgba(150,150,255,0.2); color: #9696ff; border-color: #9696ff;">C 27개</span>
+              <span class="badge" style="background: rgba(200,200,200,0.2); color: #c8c8c8; border-color: #c8c8c8;">D 26개</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="bingoGrid" style="display: grid; grid-template-columns: repeat(9, 1fr); gap: 8px; max-width: 900px; margin: 0 auto;">
+          <!-- 빙고칸들이 여기에 동적으로 추가됩니다 -->
+        </div>
+
+        <div style="margin-top: 24px; text-align: center; color: var(--muted); font-size: 14px;">
+          💡 포인트를 사용하여 빙고 칸을 선택하세요. 3포인트 = 1칸 선택 가능
+        </div>
+      </div>
+
+      <!-- Selected Items Display -->
+      <div id="selectedItems" style="display: none; margin-top: 32px;">
+        <div class="card">
+          <h3 style="margin: 0 0 16px;">내가 선택한 보상</h3>
+          <div id="selectedList" class="list"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -469,10 +542,194 @@
       });
     });
 
+    // ========== BINGO SYSTEM ==========
+    let currentUUID = null;
+    let bingoItems = [];
+    let playerBingo = [];
+    let userPoints = 0;
+
+    async function linkMinecraft() {
+      const nick = document.getElementById("mcNickInput").value.trim();
+      if (!nick || nick.length < 3 || nick.length > 16) {
+        alert("올바른 마인크래프트 닉네임을 입력하세요 (3-16자)");
+        return;
+      }
+      
+      try {
+        const resp = await fetch(`/api/validate-name?name=${encodeURIComponent(nick)}`);
+        const data = await resp.json();
+        
+        if (!data.ok || !data.uuid) {
+          alert("존재하지 않는 마인크래프트 닉네임입니다.");
+          return;
+        }
+        
+        currentUUID = data.uuid;
+        localStorage.setItem("mcUUID", currentUUID);
+        localStorage.setItem("mcName", data.name);
+        
+        // 포인트 조회
+        await loadPoints();
+        
+        // 빙고판 로드
+        await loadBingo();
+        
+        // UI 업데이트
+        document.getElementById("bingoAuth").innerHTML = `
+          <h3 style="margin: 0 0 8px; color: var(--gold-2);">✅ ${data.name} (${data.uuid})</h3>
+          <p style="margin: 0; color: var(--muted); font-size: 14px;">연동 완료!</p>
+        `;
+        
+        document.getElementById("pointsInfo").style.display = "block";
+        
+      } catch (e) {
+        alert("연동 실패: " + e.message);
+      }
+    }
+
+    async function loadPoints() {
+      if (!currentUUID) return;
+      
+      try {
+        const resp = await fetch(`/api/points/${currentUUID}`);
+        const data = await resp.json();
+        userPoints = data.points;
+        document.getElementById("pointsValue").textContent = data.points;
+      } catch (e) {
+        console.error("포인트 조회 실패", e);
+      }
+    }
+
+    async function loadBingo() {
+      try {
+        // 빙고 아이템 로드
+        const itemsResp = await fetch("/api/bingo/items");
+        bingoItems = await itemsResp.json();
+        
+        // 플레이어 빙고 로드
+        if (currentUUID) {
+          const playerResp = await fetch(`/api/bingo/player/${currentUUID}`);
+          playerBingo = await playerResp.json();
+        }
+        
+        renderBingoGrid();
+      } catch (e) {
+        console.error("빙고 로드 실패", e);
+      }
+    }
+
+    function renderBingoGrid() {
+      const grid = document.getElementById("bingoGrid");
+      grid.innerHTML = "";
+      
+      // 81개 칸 생성
+      for (let i = 0; i < 81; i++) {
+        const item = bingoItems.find(it => it.position === i);
+        const selected = playerBingo.find(pb => pb.position === i);
+        
+        const tierColors = {
+          "S+": "#ff48c0",
+          "S": "#ffa500",
+          "A": "#ffd700",
+          "B": "#64c8ff",
+          "C": "#9696ff",
+          "D": "#c8c8c8"
+        };
+        
+        const color = item ? tierColors[item.tier] : "#666";
+        const bgColor = item ? `${color}20` : "#1a1a1a";
+        
+        const cell = document.createElement("div");
+        cell.style.cssText = `
+          aspect-ratio: 1;
+          border: 2px solid ${selected ? '#f6d58a' : color};
+          border-radius: 12px;
+          background: ${selected ? `linear-gradient(135deg, ${color}40, ${color}20)` : bgColor};
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 8px;
+          cursor: ${item && userPoints >= 3 ? 'pointer' : 'default'};
+          transition: all 0.2s ease;
+          font-size: 12px;
+          text-align: center;
+          position: relative;
+        `;
+        
+        if (item && userPoints >= 3) {
+          cell.addEventListener("click", () => selectBingoSlot(i, item.id));
+          cell.style.cursor = "pointer";
+          cell.onmouseenter = () => cell.style.transform = "scale(1.05)";
+          cell.onmouseleave = () => cell.style.transform = "scale(1)";
+        } else if (item && userPoints < 3) {
+          cell.style.opacity = "0.5";
+        }
+        
+        if (item) {
+          cell.innerHTML = `
+            <div style="font-size: 10px; opacity: 0.7;">[${item.tier}]</div>
+            <div style="font-size: 11px; font-weight: 700; color: ${color}; margin: 4px 0;">${item.item_name}</div>
+            ${selected ? '<div style="font-size: 20px;">✅</div>' : ''}
+          `;
+        } else {
+          cell.innerHTML = '<div style="font-size: 20px; opacity: 0.3;">?</div>';
+        }
+        
+        grid.appendChild(cell);
+      }
+    }
+
+    async function selectBingoSlot(position, itemId) {
+      if (!currentUUID || userPoints < 3) {
+        alert("포인트가 부족합니다! (최소 3포인트 필요)");
+        return;
+      }
+      
+      if (!confirm("이 칸을 선택하시겠습니까? (3포인트 차감)")) return;
+      
+      try {
+        const resp = await fetch(`/api/bingo/select/${currentUUID}`, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({position, item_id: itemId})
+        });
+        
+        if (!resp.ok) {
+          const data = await resp.json();
+          alert(data.detail || "선택 실패");
+          return;
+        }
+        
+        const data = await resp.json();
+        userPoints = data.points_remaining;
+        document.getElementById("pointsValue").textContent = userPoints;
+        
+        // 빙고 재로드
+        await loadBingo();
+        
+      } catch (e) {
+        alert("오류: " + e.message);
+      }
+    }
+
+    // 저장된 UUID 로드
+    if (localStorage.getItem("mcUUID")) {
+      currentUUID = localStorage.getItem("mcUUID");
+      loadPoints();
+      loadBingo();
+      document.getElementById("bingoAuth").innerHTML = `
+        <h3 style="margin: 0 0 8px; color: var(--gold-2);">✅ ${localStorage.getItem("mcName")}</h3>
+        <p style="margin: 0; color: var(--muted); font-size: 14px;">연동됨</p>
+      `;
+      document.getElementById("pointsInfo").style.display = "block";
+    }
+
     // Init
     document.getElementById("year").textContent = (new Date()).getFullYear();
     loadAuth();
     loadList();
+    loadBingo();
   </script>
 </body>
 </html>

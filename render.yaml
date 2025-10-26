@@ -10,7 +10,9 @@ services:
     autoDeploy: true
     envVars:
       - key: DATABASE_URL
-        value: sqlite:///./prelaunch.db
+        # Dashboard에서 MySQL/PostgreSQL 추가 후 Internal URL을 여기에 설정
+        # 예: mariadb+pymysql://user:pass@hostname:3306/dbname
+        sync: false
       - key: ALLOWED_ORIGINS
         value: "*"
       - key: SHARED_SECRET

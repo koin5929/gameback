@@ -1,15 +1,16 @@
-import os, re, httpx
-from fastapi import FastAPI, Depends, HTTPException, Header, Query
+import os, re, httpx, secrets
+from fastapi import FastAPI, Depends, HTTPException, Header, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, constr
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from dotenv import load_dotenv
+from typing import Optional
 
 from .database import Base, engine, SessionLocal
-from .models import Reservation
+from .models import Reservation, PlayerPoints, BingoItem, PlayerBingo
 
 # ----------------- 기본 설정 -----------------
 load_dotenv()
@@ -146,6 +147,141 @@ def list_public(db: Session = Depends(get_db)):
         {"nickname": r.nickname, "mc_name": r.mc_name, "created_at": r.created_at.isoformat()}
         for r in rows
     ]
+
+# ----------------- 포인트 & 빙고판 API -----------------
+class PointsOut(BaseModel):
+    uuid: str
+    points: int
+    playtime_minutes: int
+
+@app.get("/api/points/{uuid}", response_model=PointsOut)
+def get_points(uuid: str, db: Session = Depends(get_db)):
+    player = db.query(PlayerPoints).filter(PlayerPoints.uuid == uuid).first()
+    if not player:
+        # 첫 접속 시 생성
+        player = PlayerPoints(uuid=uuid, points=0, playtime_minutes=0)
+        db.add(player)
+        db.commit()
+        db.refresh(player)
+    return PointsOut(
+        uuid=player.uuid,
+        points=player.points,
+        playtime_minutes=player.playtime_minutes
+    )
+
+class BingoItemOut(BaseModel):
+    id: int
+    position: int
+    tier: str
+    item_name: str
+
+@app.get("/api/bingo/items")
+def get_bingo_items(tier: str = None, db: Session = Depends(get_db)):
+    query = db.query(BingoItem).order_by(BingoItem.position)
+    if tier:
+        items = query.filter(BingoItem.tier == tier).all()
+    else:
+        items = query.all()
+    return [
+        {
+            "id": item.id,
+            "position": item.position,
+            "tier": item.tier,
+            "item_name": item.item_name
+        }
+        for item in items
+    ]
+
+class PlayerBingoOut(BaseModel):
+    position: int
+    item_id: int
+    claimed: bool
+
+@app.get("/api/bingo/player/{uuid}")
+def get_player_bingo(uuid: str, db: Session = Depends(get_db)):
+    selections = db.query(PlayerBingo).filter(PlayerBingo.uuid == uuid).all()
+    return [
+        {
+            "position": pb.bingo_position,
+            "item_id": pb.bingo_item_id,
+            "claimed": pb.claimed
+        }
+        for pb in selections
+    ]
+
+class SelectBingoIn(BaseModel):
+    position: int
+    item_id: int
+
+@app.post("/api/bingo/select/{uuid}")
+def select_bingo_slot(uuid: str, payload: SelectBingoIn, db: Session = Depends(get_db)):
+    # 포인트 확인 (3 포인트 필요)
+    player = db.query(PlayerPoints).filter(PlayerPoints.uuid == uuid).first()
+    if not player or player.points < 3:
+        raise HTTPException(status_code=400, detail="Insufficient points (need 3)")
+    
+    # 이미 선택했는지 확인
+    existing = db.query(PlayerBingo).filter(
+        PlayerBingo.uuid == uuid,
+        PlayerBingo.bingo_position == payload.position
+    ).first()
+    
+    if existing:
+        raise HTTPException(status_code=409, detail="Already selected")
+    
+    # 포인트 차감 (3포인트)
+    player.points -= 3
+    db.add(player)
+    
+    # 빙고 선택 저장
+    player_bingo = PlayerBingo(
+        uuid=uuid,
+        bingo_position=payload.position,
+        bingo_item_id=payload.item_id,
+        claimed=False
+    )
+    db.add(player_bingo)
+    
+    try:
+        db.commit()
+        db.refresh(player_bingo)
+        return {"ok": True, "points_remaining": player.points}
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to save selection")
+
+# ----------------- 플러그인 API (암호화 필요) -----------------
+class AddPointsIn(BaseModel):
+    minutes: int
+
+@app.post("/api/plugin/add-points/{uuid}", dependencies=[Depends(verify_secret)])
+def add_points(uuid: str, payload: AddPointsIn, db: Session = Depends(get_db)):
+    """플러그인에서 30분마다 1포인트 추가"""
+    from datetime import datetime
+    
+    player = db.query(PlayerPoints).filter(PlayerPoints.uuid == uuid).first()
+    if not player:
+        # 첫 접속 시 생성
+        player = PlayerPoints(
+            uuid=uuid,
+            points=1,  # 첫 포인트 지급
+            playtime_minutes=payload.minutes,
+            last_earned=datetime.now()
+        )
+        db.add(player)
+    else:
+        # 포인트 추가 및 플레이타임 업데이트
+        player.points += 1
+        player.playtime_minutes = payload.minutes
+        player.last_earned = datetime.now()
+    
+    try:
+        db.commit()
+        db.refresh(player)
+        return {"ok": True, "total_points": player.points, "total_minutes": player.playtime_minutes}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to add points: {str(e)}")
 
 # ----------------- 정적 파일 & SPA -----------------
 # ⚠️ 반드시 맨 마지막에 둬야 함
