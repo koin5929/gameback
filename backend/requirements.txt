@@ -6,4 +6,5 @@ python-dotenv
 httpx
 discord.py
 PyMySQL
+psycopg2-binary
 authlib
