@@ -596,7 +596,7 @@
         userPoints = data.points;
         document.getElementById("pointsValue").textContent = data.points;
       } catch (e) {
-        console.error("포인트 조회 실패", e);
+        // 에러 로그 숨김
       }
     }
 
@@ -614,7 +614,7 @@
         
         renderBingoGrid();
       } catch (e) {
-        console.error("빙고 로드 실패", e);
+        // 에러 로그 숨김
       }
     }
 
@@ -640,6 +640,8 @@
         const bgColor = item ? `${color}20` : "#1a1a1a";
         
         const cell = document.createElement("div");
+        
+        // 기본 스타일 설정
         cell.style.cssText = `
           aspect-ratio: 1;
           border: 2px solid ${selected ? '#f6d58a' : color};
@@ -650,29 +652,48 @@
           align-items: center;
           justify-content: center;
           padding: 8px;
-          cursor: ${item && userPoints >= 3 ? 'pointer' : 'default'};
           transition: all 0.2s ease;
           font-size: 12px;
           text-align: center;
           position: relative;
+          user-select: none;
+          -webkit-user-select: none;
         `;
         
-        if (item && userPoints >= 3) {
-          cell.addEventListener("click", () => selectBingoSlot(i, item.id));
-          cell.style.cursor = "pointer";
-          cell.onmouseenter = () => cell.style.transform = "scale(1.05)";
-          cell.onmouseleave = () => cell.style.transform = "scale(1)";
-        } else if (item && userPoints < 3) {
-          cell.style.opacity = "0.5";
-        }
-        
+        // 클릭 가능 여부에 따라 스타일 및 이벤트 설정
         if (item) {
+          if (userPoints >= 3) {
+            cell.style.cursor = "pointer";
+            cell.style.opacity = "1";
+            
+            // 클릭 이벤트 (클로저 사용)
+            const position = i;
+            const itemId = item.id;
+            cell.addEventListener("click", () => selectBingoSlot(position, itemId));
+            
+            // 호버 효과
+            cell.addEventListener("mouseenter", () => {
+              cell.style.transform = "scale(1.05)";
+              cell.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+            });
+            cell.addEventListener("mouseleave", () => {
+              cell.style.transform = "scale(1)";
+              cell.style.boxShadow = "";
+            });
+          } else {
+            cell.style.cursor = "not-allowed";
+            cell.style.opacity = "0.5";
+          }
+          
+          // 내용 설정
           cell.innerHTML = `
             <div style="font-size: 10px; opacity: 0.7;">[${item.tier}]</div>
             <div style="font-size: 11px; font-weight: 700; color: ${color}; margin: 4px 0;">${item.item_name}</div>
             ${selected ? '<div style="font-size: 20px;">✅</div>' : ''}
           `;
         } else {
+          cell.style.cursor = "default";
+          cell.style.opacity = "0.3";
           cell.innerHTML = '<div style="font-size: 20px; opacity: 0.3;">?</div>';
         }
         
@@ -725,6 +746,55 @@
       document.getElementById("pointsInfo").style.display = "block";
     }
 
+    // ========== 보안: 개발자 도구 차단 ==========
+    (function() {
+      'use strict';
+      
+      // 콘솔 오버라이드
+      const noop = () => void 0;
+      const methods = ['log', 'debug', 'info', 'warn', 'error'];
+      methods.forEach(method => {
+        window.console[method] = noop;
+      });
+      
+      // 개발자 도구 감지 및 경고
+      let devtools = {open: false, orientation: null};
+      
+      setInterval(() => {
+        if (window.outerHeight - window.innerHeight > 200 || 
+            window.outerWidth - window.innerWidth > 200) {
+          if (!devtools.open) {
+            devtools.open = true;
+            document.body.style.filter = 'blur(10px)';
+            setTimeout(() => {
+              document.body.style.filter = '';
+            }, 100);
+          }
+        } else {
+          devtools.open = false;
+        }
+      }, 500);
+      
+      // F12, Ctrl+Shift+I 등 차단
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'F12' || 
+           (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+           (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+           (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+           (e.ctrlKey && e.key === 'U')) {
+          e.preventDefault();
+          return false;
+        }
+        return true;
+      });
+      
+      // 우클릭 차단
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      
+      // 텍스트 선택 일부 차단
+      document.addEventListener('selectstart', e => e.preventDefault());
+    })();
+    
     // Init
     document.getElementById("year").textContent = (new Date()).getFullYear();
     loadAuth();
