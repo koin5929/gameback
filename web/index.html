@@ -595,6 +595,11 @@
         const data = await resp.json();
         userPoints = data.points;
         document.getElementById("pointsValue").textContent = data.points;
+        
+        // 포인트 업데이트 후 빙고판 다시 렌더링
+        if (bingoItems.length > 0) {
+          renderBingoGrid();
+        }
       } catch (e) {
         // 에러 로그 숨김
       }
@@ -737,13 +742,14 @@
     // 저장된 UUID 로드
     if (localStorage.getItem("mcUUID")) {
       currentUUID = localStorage.getItem("mcUUID");
-      loadPoints();
-      loadBingo();
       document.getElementById("bingoAuth").innerHTML = `
         <h3 style="margin: 0 0 8px; color: var(--gold-2);">✅ ${localStorage.getItem("mcName")}</h3>
         <p style="margin: 0; color: var(--muted); font-size: 14px;">연동됨</p>
       `;
       document.getElementById("pointsInfo").style.display = "block";
+      
+      // 비동기로 로드
+      loadBingo().then(() => loadPoints());
     }
 
     // ========== 보안: 개발자 도구 차단 ==========
