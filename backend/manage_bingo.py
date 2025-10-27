@@ -49,28 +49,28 @@ def init_bingo():
         # 등급별 포지션 정의
         positions = []
         
-        # S+ 등급: 1개 (0번)
-        positions.append((0, "S+", "최고급 보상", "give {player} diamond 64"))
+        # S+ 등급: 1개 (0번) - 👉 이 부분 수정!
+        positions.append((0, "S+", "네더라이트", "give {player} netherite_ingot 4"))
         
-        # S 등급: 3개
+        # S 등급: 3개 - 👉 이 부분 수정!
         for i in range(1, 4):
-            positions.append((i, "S", f"S급 보상 {i}", f"give {{player}} emerald_block 32"))
+            positions.append((i, "S", f"S급 보상 {i}", f"give {{player}} diamond_block 16"))
         
-        # A 등급: 6개
+        # A 등급: 6개 - 👉 이 부분 수정!
         for i in range(4, 10):
-            positions.append((i, "A", f"A급 보상 {i-3}", f"give {{player}} gold_block 16"))
+            positions.append((i, "A", f"A급 보상 {i-3}", f"give {{player}} emerald_block 16"))
         
-        # B 등급: 18개
+        # B 등급: 18개 - 👉 이 부분 수정!
         for i in range(10, 28):
-            positions.append((i, "B", f"B급 보상 {i-9}", f"give {{player}} iron_block 8"))
+            positions.append((i, "B", f"B급 보상 {i-9}", f"give {{player}} iron_ingot 64"))
         
-        # C 등급: 27개
+        # C 등급: 27개 - 👉 이 부분 수정!
         for i in range(28, 55):
-            positions.append((i, "C", f"C급 보상 {i-27}", f"give {{player}} coal_block 4"))
+            positions.append((i, "C", f"C급 보상 {i-27}", f"give {{player}} coal_block 16"))
         
-        # D 등급: 26개 (나머지)
+        # D 등급: 26개 - 👉 이 부분 수정!
         for i in range(55, 81):
-            positions.append((i, "D", f"D급 보상 {i-54}", f"give {{player}} cobblestone 32"))
+            positions.append((i, "D", f"D급 보상 {i-54}", f"give {{player}} coal 64"))
         
         # DB에 추가
         for pos, tier, name, cmd in positions:

@@ -283,6 +283,63 @@ def add_points(uuid: str, payload: AddPointsIn, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to add points: {str(e)}")
 
+class ClaimRewardOut(BaseModel):
+    position: int
+    item_id: int
+    item_name: str
+    item_command: str
+
+@app.get("/api/plugin/unclaimed-rewards/{uuid}", dependencies=[Depends(verify_secret)])
+def get_unclaimed_rewards(uuid: str, db: Session = Depends(get_db)):
+    """플러그인: 미지급 보상 목록 조회"""
+    # 선택했지만 아직 지급 안 된 보상 조회
+    selections = db.query(PlayerBingo).filter(
+        PlayerBingo.uuid == uuid,
+        PlayerBingo.claimed == False
+    ).all()
+    
+    rewards = []
+    for sel in selections:
+        # 빙고 아이템 정보 가져오기
+        item = db.query(BingoItem).filter(BingoItem.id == sel.bingo_item_id).first()
+        if item:
+            rewards.append({
+                "position": sel.bingo_position,
+                "item_id": item.id,
+                "item_name": item.item_name,
+                "item_command": item.item_command
+            })
+    
+    return rewards
+
+@app.post("/api/plugin/claim-reward/{uuid}/{position}", dependencies=[Depends(verify_secret)])
+def claim_reward(uuid: str, position: int, db: Session = Depends(get_db)):
+    """플러그인: 보상 지급 완료 처리"""
+    from datetime import datetime
+    
+    # bingo_position으로 조회 (화면 위치)
+    selection = db.query(PlayerBingo).filter(
+        PlayerBingo.uuid == uuid,
+        PlayerBingo.bingo_position == position
+    ).first()
+    
+    if not selection:
+        raise HTTPException(status_code=404, detail="Selection not found")
+    
+    if selection.claimed:
+        raise HTTPException(status_code=400, detail="Already claimed")
+    
+    # claimed 플래그 설정
+    selection.claimed = True
+    selection.claimed_at = datetime.now()
+    
+    try:
+        db.commit()
+        return {"ok": True}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to claim reward: {str(e)}")
+
 # ----------------- 정적 파일 & SPA -----------------
 # ⚠️ 반드시 맨 마지막에 둬야 함
 app.mount("/assets", StaticFiles(directory="web/assets"), name="assets")
