@@ -609,7 +609,10 @@
       try {
         // 빙고 아이템 로드
         const itemsResp = await fetch("/api/bingo/items");
-        bingoItems = await itemsResp.json();
+        const allItems = await itemsResp.json();
+        
+        // 빙고 아이템을 랜덤하게 섞기
+        bingoItems = shuffleArray(allItems);
         
         // 플레이어 빙고 로드
         if (currentUUID) {
@@ -622,15 +625,28 @@
         // 에러 로그 숨김
       }
     }
+    
+    // 배열 랜덤 섞기 함수
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
     function renderBingoGrid() {
       const grid = document.getElementById("bingoGrid");
       grid.innerHTML = "";
       
-      // 81개 칸 생성
+      // 선택된 아이템 ID 목록
+      const selectedItemIds = new Set(playerBingo.map(pb => pb.bingo_item_id));
+      
+      // 81개 칸 생성 (랜덤 섞인 순서로)
       for (let i = 0; i < 81; i++) {
-        const item = bingoItems.find(it => it.position === i);
-        const selected = playerBingo.find(pb => pb.position === i);
+        const item = bingoItems[i]; // 랜덤 순서로 배치
+        const selected = item && selectedItemIds.has(item.id);
         
         const tierColors = {
           "S+": "#ff48c0",
@@ -665,9 +681,12 @@
           -webkit-user-select: none;
         `;
         
-        // 클릭 가능 여부에 따라 스타일 및 이벤트 설정
-        if (item) {
-          if (userPoints >= 3) {
+        // 선택되지 않은 칸은 "?"로 표시
+        if (!selected) {
+          // 선택 안 된 칸은 항상 "?"
+          cell.innerHTML = '<div style="font-size: 24px; opacity: 0.5;">?</div>';
+          
+          if (item && userPoints >= 3) {
             cell.style.cursor = "pointer";
             cell.style.opacity = "1";
             
@@ -679,7 +698,7 @@
             // 호버 효과
             cell.addEventListener("mouseenter", () => {
               cell.style.transform = "scale(1.05)";
-              cell.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+              cell.style.boxShadow = "0 4px 12px rgba(255,255,255,0.2)";
             });
             cell.addEventListener("mouseleave", () => {
               cell.style.transform = "scale(1)";
@@ -687,19 +706,15 @@
             });
           } else {
             cell.style.cursor = "not-allowed";
-            cell.style.opacity = "0.5";
           }
-          
-          // 내용 설정
+        } else {
+          // 선택된 칸만 보상 표시
           cell.innerHTML = `
             <div style="font-size: 10px; opacity: 0.7;">[${item.tier}]</div>
             <div style="font-size: 11px; font-weight: 700; color: ${color}; margin: 4px 0;">${item.item_name}</div>
-            ${selected ? '<div style="font-size: 20px;">✅</div>' : ''}
+            <div style="font-size: 20px;">✅</div>
           `;
-        } else {
           cell.style.cursor = "default";
-          cell.style.opacity = "0.3";
-          cell.innerHTML = '<div style="font-size: 20px; opacity: 0.3;">?</div>';
         }
         
         grid.appendChild(cell);
